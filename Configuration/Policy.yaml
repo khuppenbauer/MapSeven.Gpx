@@ -1,0 +1,22 @@
+#                                                                        #
+# Security policy for the Flow Framework                                 #
+#                                                                        #
+# This file contains the default security policy configuration for the   #
+# Flow Framework. Don't modify this file but add configuration           #
+# options to the Policy.yaml file in the in global Configuration/        #
+# directory instead.                                                     #
+
+privilegeTargets:
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'MapSeven.Gpx:Auth':
+      matcher: 'method(public MapSeven\Gpx\Controller\AuthenticationController->authAction())'
+    'MapSeven.Gpx:StravaImport':
+      matcher: 'method(public MapSeven\Gpx\Controller\StravaController->(create|update|delete)Action())'
+
+roles:
+  'MapSeven.Gpx:Api':
+    privileges:
+      - privilegeTarget: 'MapSeven.Gpx:Auth'
+        permission: GRANT
+      - privilegeTarget: 'MapSeven.Gpx:StravaImport'
+        permission: GRANT

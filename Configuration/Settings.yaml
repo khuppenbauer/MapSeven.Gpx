@@ -1,0 +1,74 @@
+Neos:
+  Flow:
+    security:
+      authentication:
+        providers:
+          TokenProvider:
+            provider: \Neos\Flow\Security\Authentication\Provider\PersistedUsernamePasswordProvider
+            token: 'Neos\Flow\Security\Authentication\Token\UsernamePasswordHttpBasic'
+
+MapSeven:
+  Gpx:
+    strava:
+      api:
+        auth:
+          client_id: null
+          client_secret: null
+          grant_type: refresh_token
+          refresh_token: null
+        base_uri: 'https://www.strava.com/api/v3/'
+        oauth_uri: 'https://www.strava.com/oauth/token'
+      mappingKeys:
+        activity:
+          - arrayAccess: author
+            objectAccess: author
+          - arrayAccess: average_speed
+            objectAccess: averageSpeed
+          - arrayAccess: distance
+            objectAccess: distance
+          - arrayAccess: elapsed_time
+            objectAccess: elapsedTime
+          - arrayAccess: elev_high
+            objectAccess: elevHigh
+          - arrayAccess: elev_low
+            objectAccess: elevLow
+          - arrayAccess: end_latlng
+            objectAccess: endCoords
+          - arrayAccess: id
+            objectAccess: id
+          - arrayAccess: max_speed
+            objectAccess: maxSpeed
+          - arrayAccess: moving_time
+            objectAccess: movingTime
+          - arrayAccess: name
+            objectAccess: name
+          - arrayAccess: photos
+            objectAccess: photos
+          - arrayAccess: map.polyline
+            objectAccess: polyline
+          - arrayAccess: bounds.minLatLon
+            objectAccess: minCoords
+          - arrayAccess: bounds.maxLatLon
+            objectAccess: maxCoords
+          - arrayAccess: segment_efforts
+            objectAccess: segmentEfforts
+          - arrayAccess: geocoding.address.city
+            objectAccess: startCity
+          - arrayAccess: geocoding.address.state
+            objectAccess: startState
+          - arrayAccess: geocoding.address.country
+            objectAccess: startCountry            
+          - arrayAccess: start_latlng
+            objectAccess: startCoords
+          - arrayAccess: map.summary_polyline
+            objectAccess: summaryPolyline
+          - arrayAccess: total_elevation_gain
+            objectAccess: totalElevationGain
+          - arrayAccess: type
+            objectAccess: type
+    geocoding:
+      base_uri: https://eu1.locationiq.com/v1/
+      key: null
+    timezone:
+      base_uri: http://api.timezonedb.com/v2.1/
+      key: null
