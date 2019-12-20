@@ -72,3 +72,19 @@ MapSeven:
     timezone:
       base_uri: http://api.timezonedb.com/v2.1/
       key: null
+
+t3n:
+  GraphQL:
+    endpoints:
+      'graphql':
+        schemas:
+          root:
+            typeDefs: 'resource://MapSeven.Gpx/Private/GraphQL/schema.root.graphql'
+            resolvers:
+              Query: 'MapSeven\Gpx\GraphQL\Resolver\QueryResolver'
+              Strava: 'MapSeven\Gpx\GraphQL\Resolver\StravaResolver'
+              Gpx: 'MapSeven\Gpx\GraphQL\Resolver\GpxResolver'
+        schemaDirectives:
+          auth: 't3n\GraphQL\Directive\AuthDirective'
+          cached: 't3n\GraphQL\Directive\CachedDirective'
+          cost: 't3n\GraphQL\Directive\CostDirective'

@@ -1,0 +1,118 @@
+type Query {
+  strava(id: ID, identifier: ID): Strava
+  stravaActivities: [Strava]
+  gpx(identifier: ID!): Gpx
+  gpxActivities: [Gpx]
+}
+
+type Gpx {
+  identifier: ID!
+  name: String!
+  date: String
+  type: String
+  author: String
+  startCoords: [Float]
+  endCoords: [Float]
+  distance: Float
+  elapsedTime: Float
+  totalElevationGain: Float
+  elevHigh: Float
+  elevLow: Float
+  minCoords: [Float]
+  maxCoords: [Float]
+  startCity: String
+  startState: String
+  startCountry: String
+  coords: [Coord]
+}
+
+type Strava {
+  identifier: ID!
+  name: String!
+  date: String
+  type: String
+  author: String
+  startCoords: [Float]
+  endCoords: [Float]
+  distance: Float
+  elapsedTime: Float
+  totalElevationGain: Float
+  elevHigh: Float
+  elevLow: Float
+  minCoords: [Float]
+  maxCoords: [Float]
+  startCity: String
+  startState: String
+  startCountry: String
+  coords: [Coord]
+  id: ID
+  movingTime: Float
+  averageSpeed: Float
+  maxSpeed: Float
+  polyline: String
+  summaryPolyline: String
+  segmentEfforts: [SegmentEffort]
+  photos: [String]
+}
+
+type Coord {
+  lat: Float
+  lon: Float
+  ele: Float
+}
+
+type SegmentEffort {
+  id: ID
+  name: String
+  hidden: Boolean
+  segment: Segment
+  pr_rank: Int
+  kom_rank: Int
+  distance: Float
+  start_date_local: String
+  moving_time: Float
+  elapsed_time: Float
+  athlete: Athlete
+  activity: Activity
+  achievements: [Achievements]
+}
+
+type Athlete {
+  id: ID
+  resource_state: Int
+}
+
+type Activity {
+  id: ID
+  resource_state: Int
+}
+
+type Achievements {
+  rank: Int
+  type: String
+  type_id: Int
+} 
+
+type Segment {
+  id: ID
+  city: String
+  name: String
+  private: Boolean
+  starred: Boolean
+  hazardous: Boolean
+  state: String
+  country: String
+  distance: String
+  start_latlng: [Float]
+  start_latitude: Float
+  start_longitude: Float
+  end_latlng: [Float]
+  end_latitude: Float
+  end_longitude: Float
+  activity_type: String
+  average_grade: Float
+  elevation_low: Float
+  maximum_grade: Float
+  climb_category: Int
+  elevation_high: Float
+}

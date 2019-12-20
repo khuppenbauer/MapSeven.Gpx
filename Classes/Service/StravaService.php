@@ -268,6 +268,30 @@ class StravaService
     }
 
     /**
+     * Returns coords from gpx file
+     *
+     * @param Document $gpxFile
+     * @return array
+     */
+    public function convertGpx(Document $gpxFile)
+    {
+        $url = $this->resourceManager->getPublicPersistentResourceUri($gpxFile->getResource());
+        $xml = file_get_contents($url);
+        $content = simplexml_load_string($xml);
+        $array = json_decode(json_encode($content), true);
+        $points = Arrays::getValueByPath($array, 'trk.trkseg.trkpt');
+        $coords = [];
+        foreach ($points as $point) {
+            $coords[] = [
+                'lat' => $point['@attributes']['lat'],
+                'lon' => $point['@attributes']['lon'],
+                'ele' => $point['ele']
+            ];
+        }
+        return $coords;
+    }
+
+    /**
      * Returns sanitized filename
      * 
      * @param string $title

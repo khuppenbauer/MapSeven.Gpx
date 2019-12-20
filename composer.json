@@ -5,7 +5,9 @@
     "require": {
         "neos/flow": "*",
         "flowpack/elasticsearch": "*",
-        "guzzlehttp/guzzle": "*"
+        "guzzlehttp/guzzle": "*",
+        "neos/media": "*",
+        "t3n/graphql": "*"
     },
     "autoload": {
         "psr-4": {
