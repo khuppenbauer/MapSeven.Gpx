@@ -72,6 +72,8 @@ MapSeven:
     timezone:
       base_uri: http://api.timezonedb.com/v2.1/
       key: null
+    webhook:
+      urls: []
 
 t3n:
   GraphQL:
