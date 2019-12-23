@@ -83,6 +83,7 @@ class StravaController extends RestController
     {
         $athlete = $this->stravaService->requestUri($this->apiSettings['base_uri'], ['athlete']);
         $strava = $this->stravaService->addActivity($strava->getId(), $athlete['username']);
+        $this->emitActivityCreated($strava);
         $this->view->assign('value', $strava);
     }
 
@@ -96,6 +97,7 @@ class StravaController extends RestController
     public function updateAction(Strava $strava)
     {
         $this->stravaRepository->update($strava);
+        $this->emitActivityUpdated($strava);
         $this->view->assign('value', $strava);
     }
 
@@ -109,6 +111,7 @@ class StravaController extends RestController
     public function deleteAction(Strava $strava)
     {
         $this->stravaRepository->remove($strava);
+        $this->emitActivityDeleted($strava);
         $this->response->setStatusCode(204);
     }
 
@@ -122,5 +125,38 @@ class StravaController extends RestController
         $viewObjectName = self::JSON_VIEW;
         $view = $this->objectManager->get($viewObjectName);
         return $view;
+    }
+
+    /**
+     * Signal that a strava activity was created
+     *
+     * @Flow\Signal
+     * @param Strava $strava
+     * @return void
+     */
+    protected function emitActivityCreated(Strava $strava)
+    {
+    }
+
+    /**
+     * Signals that a strava activity was updated
+     *
+     * @Flow\Signal
+     * @param Strava $strava
+     * @return void
+     */
+    protected function emitActivityUpdated(Strava $strava)
+    {
+    }
+
+    /**
+     * Signals that a strava activity was deleted
+     *
+     * @Flow\Signal
+     * @param Strava $strava
+     * @return void
+     */
+    protected function emitActivityDeleted(Strava $strava)
+    {
     }
 }
