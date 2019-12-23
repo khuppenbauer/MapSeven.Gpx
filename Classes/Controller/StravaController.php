@@ -31,6 +31,12 @@ class StravaController extends RestController
     protected $resourceArgumentName = 'strava';
 
     /**
+     * @Flow\InjectConfiguration("strava.api")
+     * @var array
+     */
+    protected $apiSettings;
+
+    /**
      * @Flow\Inject
      * @var StravaRepository
      */
@@ -75,7 +81,8 @@ class StravaController extends RestController
      */
     public function createAction(Strava $strava)
     {
-        $strava = $this->stravaService->addActivity($strava->getId());
+        $athlete = $this->stravaService->requestUri($this->apiSettings['base_uri'], ['athlete']);
+        $strava = $this->stravaService->addActivity($strava->getId(), $athlete['username']);
         $this->view->assign('value', $strava);
     }
 
