@@ -236,7 +236,7 @@ class StravaService
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($content);
-        $resource = $this->resourceManager->importResourceFromContent($dom->saveXML(), $filename . '.xml');
+        $resource = $this->resourceManager->importResourceFromContent($dom->saveXML(), $filename . '.gpx');
         $asset = new Document($resource);
         $asset->setTitle($filename);
         $asset->setAssetSourceIdentifier($source);
