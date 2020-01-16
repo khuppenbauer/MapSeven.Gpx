@@ -83,6 +83,7 @@ class StravaController extends RestController
     {
         $athlete = $this->stravaService->requestUri($this->apiSettings['base_uri'], ['athlete']);
         $strava = $this->stravaService->addActivity($strava->getId(), $athlete['username']);
+        $this->persistenceManager->persistAll();
         $this->emitActivityCreated($strava);
         $this->view->assign('value', $strava);
     }
@@ -97,6 +98,7 @@ class StravaController extends RestController
     public function updateAction(Strava $strava)
     {
         $this->stravaRepository->update($strava);
+        $this->persistenceManager->persistAll();
         $this->emitActivityUpdated($strava);
         $this->view->assign('value', $strava);
     }

@@ -10,6 +10,7 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cli\CommandController;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use MapSeven\Gpx\Service\StravaService;
+use MapSeven\Gpx\Service\FileService;
 use MapSeven\Gpx\Domain\Repository\StravaRepository;
 use MapSeven\Gpx\Domain\Model\Strava;
 
@@ -38,6 +39,12 @@ class StravaCommandController extends CommandController
      * @var StravaService
      */
     protected $stravaService;
+
+    /**
+     * @Flow\Inject
+     * @var FileService
+     */
+    protected $fileService;
 
     /**
      * @Flow\Inject
@@ -72,6 +79,18 @@ class StravaCommandController extends CommandController
             } else {
                 $this->stravaRepository->update($stravaActivity);
             }
+        }
+    }
+
+    /**
+     * Write StaticFile
+     */
+    public function createStaticFilesCommand()
+    {
+        $stravaActivities = $this->stravaRepository->findAll();
+        foreach ($stravaActivities as $stravaActivity) {
+            $filename = $this->fileService->createFile($stravaActivity);
+            $this->outputLine('File ' . $filename . ' created');
         }
     }
 

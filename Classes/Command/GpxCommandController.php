@@ -14,6 +14,7 @@ use Neos\Utility\Files;
 use MapSeven\Gpx\Domain\Model\Gpx;
 use MapSeven\Gpx\Domain\Repository\GpxRepository;
 use MapSeven\Gpx\Service\StravaService;
+use MapSeven\Gpx\Service\FileService;
 use Neos\Media\Domain\Repository\AssetRepository;
 
 /**
@@ -53,6 +54,12 @@ class GpxCommandController extends CommandController
      * @var StravaService
      */
     protected $stravaService;
+
+    /**
+     * @Flow\Inject
+     * @var FileService
+     */
+    protected $fileService;
     
     /**
      * @Flow\Inject
@@ -120,7 +127,19 @@ class GpxCommandController extends CommandController
             }
         }        
     }
-    
+
+    /**
+     * Write StaticFile
+     */
+    public function createStaticFilesCommand()
+    {
+        $gpxActivities = $this->gpxRepository->findAll();
+        foreach ($gpxActivities as $gpx) {
+            $filename = $this->fileService->createFile($gpx);
+            $this->outputLine('File ' . $filename . ' created');
+        }
+    }
+
     /**
      * Returns gpx object
      * 

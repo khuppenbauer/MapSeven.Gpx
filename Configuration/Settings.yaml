@@ -9,6 +9,7 @@ Neos:
 
 MapSeven:
   Gpx:
+    domain: null
     strava:
       api:
         auth:
@@ -74,6 +75,14 @@ MapSeven:
       key: null
     webhook:
       urls: []
+    staticFile:
+      create:
+        enabled: false
+        path: null
+        extension: json
+      commit:
+        enabled: false
+        path: null
 
 t3n:
   GraphQL:

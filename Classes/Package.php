@@ -29,5 +29,9 @@ class Package extends BasePackage
         $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityCreated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
         $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityUpdated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
         $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityDeleted', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
+
+        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityCreated', 'MapSeven\Gpx\Service\FileService', 'createFile');
+        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityUpdated', 'MapSeven\Gpx\Service\FileService', 'createFile');
+        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityDeleted', 'MapSeven\Gpx\Service\FileService', 'deleteFile');
     }
 }
