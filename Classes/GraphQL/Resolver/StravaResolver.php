@@ -42,6 +42,11 @@ class StravaResolver implements ResolverInterface
         return $strava->getDate()->format('Y-m-d');
     }
 
+    public function slug(Strava $strava)
+    {
+        return $strava->getDate()->format('Y-m-d') . '-' . StravaService::sanitizeFilename($strava->getName());
+    }
+
     public function coords(Strava $strava)
     {
         $gpxFile = $strava->getGpxFile();

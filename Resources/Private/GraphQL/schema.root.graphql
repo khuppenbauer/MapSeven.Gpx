@@ -7,6 +7,7 @@ type Query {
 
 type Gpx {
   identifier: ID!
+  slug: String
   name: String!
   date: String
   type: String
@@ -28,6 +29,7 @@ type Gpx {
 
 type Strava {
   identifier: ID!
+  slug: String
   name: String!
   date: String
   type: String

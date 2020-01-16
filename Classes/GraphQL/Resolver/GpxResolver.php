@@ -37,6 +37,11 @@ class GpxResolver implements ResolverInterface
         return $this->persistenceManager->getIdentifierByObject($gpx);
     }
 
+    public function slug(Gpx $gpx)
+    {
+        return $gpx->getDate()->format('Y-m-d') . '-' . StravaService::sanitizeFilename($gpx->getName());
+    }
+
     public function coords(Gpx $gpx)
     {
         $gpxFile = $gpx->getGpxFile();
