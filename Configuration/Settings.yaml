@@ -83,6 +83,15 @@ MapSeven:
       commit:
         enabled: false
         path: null
+    visualization:
+      enabled: true
+      api:
+        basicAuth: null
+        auth:
+          refresh_token: null
+          grant_type: refresh_token
+        oauth_uri: https://api.ayvri.com/2.0/auth
+        base_uri: https://api.ayvri.com/2.0/
 
 t3n:
   GraphQL:

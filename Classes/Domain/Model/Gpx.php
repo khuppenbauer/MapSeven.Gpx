@@ -167,6 +167,12 @@ class Gpx
      */
     protected $gpxFile;
 
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     */
+    protected $visualizationUrl;
+
 
     /**
      * Constructs this gpx object
@@ -501,5 +507,21 @@ class Gpx
     public function getGpxFile()
     {
         return $this->gpxFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVisualizationUrl()
+    {
+        return $this->visualizationUrl;
+    }
+
+    /**
+     * @param string $visualizationUrl
+     */
+    public function setVisualizationUrl($visualizationUrl)
+    {
+        $this->visualizationUrl = $visualizationUrl;
     }
 }
