@@ -39,6 +39,17 @@ class AuthenticationController extends RestController
     {
         $this->view->assign('value', ['user' => $this->securityContext->getAccount()->getAccountIdentifier()]);
     }   
+
+    /**
+     * OAuth2 Callback Method
+     *
+     * @SkipCsrfProtection
+     * @return void
+     */
+    public function oAuth2CallbackAction()
+    {
+        $this->view->assign('value', ['200' => 'success']);
+    }
     
     /**
      * Overrides the standard resolveView method
