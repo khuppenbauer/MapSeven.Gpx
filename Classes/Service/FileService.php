@@ -101,7 +101,7 @@ class FileService
         if (!empty($existingDocument)) {
             return $this->fileRepository->findOneByGpxFile($existingDocument);
         } 
-        $gpxFile = $this->utilityService->saveXMLDocument($filename, $xml, 'gpx');
+        $gpxFile = $this->utilityService->saveXMLDocument($filename, $xml, 'file');
         $owner = Arrays::getValueByPath($array, 'metadata.author.name'); 
         $author = !empty($owner) ? $owner : $author;
         $fileObject = $this->convertObject($name, $date, $array, $author, $type);
@@ -132,10 +132,12 @@ class FileService
         if (empty($points)) {
             $points = Arrays::getValueByPath($array, 'trk.trkseg.0.trkpt');
         }
+        array_shift($points);
         if (!empty($points)) {
             $startPoint = $points[0];
             $endPoint = $points[count($points)-1];
-            $geocoding = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $startPoint['@attributes']['lat'], 'lon' => $startPoint['@attributes']['lon'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
+            $startLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $startPoint['@attributes']['lat'], 'lon' => $startPoint['@attributes']['lon'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
+            $endLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $endPoint['@attributes']['lat'], 'lon' => $endPoint['@attributes']['lon'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
             $timezone = $this->utilityService->requestUri($this->timezoneSettings, ['get-time-zone'], ['key' => $this->timezoneSettings['key'], 'format' => 'json', 'lat' => $startPoint['@attributes']['lat'], 'lng' => $startPoint['@attributes']['lon'], 'by' => 'position'], false);
             $date->setTimezone(new \DateTimeZone($timezone['zoneName']));
             $file = new File();
@@ -152,10 +154,14 @@ class FileService
             $file->setElevLow($data['elevLow']);
             $file->setElevHigh($data['elevHigh']);
             $file->setTotalElevationGain($data['totalElevationGain']);
+            $file->setTotalElevationLoss($data['totalElevationLoss']);
             $file->setDistance($data['distance']);
-            $file->setStartCity(Arrays::getValueByPath($geocoding, 'address.city'));
-            $file->setStartCountry(Arrays::getValueByPath($geocoding, 'address.country'));
-            $file->setStartState(Arrays::getValueByPath($geocoding, 'address.state'));
+            $file->setStartCity(Arrays::getValueByPath($startLocation, 'address.city'));
+            $file->setStartCountry(Arrays::getValueByPath($startLocation, 'address.country'));
+            $file->setStartState(Arrays::getValueByPath($startLocation, 'address.state'));
+            $file->setEndCity(Arrays::getValueByPath($endLocation, 'address.city'));
+            $file->setEndCountry(Arrays::getValueByPath($endLocation, 'address.country'));
+            $file->setEndState(Arrays::getValueByPath($endLocation, 'address.state'));
             return $file;
         }
     }
@@ -169,6 +175,7 @@ class FileService
     protected static function calculateFromPoints($points)
     {
         $totalElevationGain = 0;
+        $totalElevationLoss = 0;
         $distance = 0;
         $elapsedTime = 0;
         foreach ($points as $point) {
@@ -200,7 +207,11 @@ class FileService
                 if (!empty($ele1) && $ele2 > $ele1) {
                     $diff = $ele2 - $ele1;
                     $totalElevationGain = $totalElevationGain + $diff;
-                }                
+                }
+                if (!empty($ele1) && $ele2 < $ele1) {
+                    $diff = $ele1 - $ele2;
+                    $totalElevationLoss = $totalElevationLoss + $diff;
+                }
                 $ele[] = $point['ele'];
                 $ele1 = $point['ele'];
             }
@@ -211,6 +222,7 @@ class FileService
             'elevLow' => round(min($ele), 2),
             'elevHigh' => round(max($ele), 2),
             'totalElevationGain' => round($totalElevationGain, 2),
+            'totalElevationLoss' => round($totalElevationLoss, 2),
             'distance' => round($distance, 2),
             'elapsedTime' => $elapsedTime
         ];

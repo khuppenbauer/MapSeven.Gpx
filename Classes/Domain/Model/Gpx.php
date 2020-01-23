@@ -111,6 +111,13 @@ class Gpx
      * @ORM\Column(nullable=true)
      * @ElasticSearch\Indexable
      */
+    protected $totalElevationLoss;
+
+    /**
+     * @var float
+     * @ORM\Column(nullable=true)
+     * @ElasticSearch\Indexable
+     */
     protected $elevHigh;
     
     /**
@@ -159,6 +166,30 @@ class Gpx
      * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
      */
     protected $startCountry;
+
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     * @ElasticSearch\Indexable
+     * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
+     */
+    protected $endCity;
+
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     * @ElasticSearch\Indexable
+     * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
+     */
+    protected $endState;
+
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     * @ElasticSearch\Indexable
+     * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
+     */
+    protected $endCountry;
     
     /**
      * @var Asset
@@ -383,6 +414,22 @@ class Gpx
     /**
      * @return float
      */
+    public function getTotalElevationLoss()
+    {
+        return $this->totalElevationLoss;
+    }
+
+    /**
+     * @param float $totalElevationLoss
+     */
+    public function setTotalElevationLoss($totalElevationLoss)
+    {
+        $this->totalElevationLoss = $totalElevationLoss;
+    }
+
+    /**
+     * @return float
+     */
     public function getElevHigh() 
     {
         return $this->elevHigh;
@@ -490,6 +537,54 @@ class Gpx
     public function setStartCountry($startCountry) 
     {
         $this->startCountry = $startCountry;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndCity()
+    {
+        return $this->endCity;
+    }
+
+    /**
+     * @param string $endCity
+     */
+    public function setEndCity($endCity)
+    {
+        $this->endCity = $endCity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndState()
+    {
+        return $this->endState;
+    }
+
+    /**
+     * @param string $endState
+     */
+    public function setEndState($endState)
+    {
+        $this->endState = $endState;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndCountry()
+    {
+        return $this->endCountry;
+    }
+
+    /**
+     * @param string $endCountry
+     */
+    public function setEndCountry($endCountry)
+    {
+        $this->endCountry = $endCountry;
     }
     
     /**

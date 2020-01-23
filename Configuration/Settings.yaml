@@ -33,6 +33,12 @@ MapSeven:
             objectAccess: elevHigh
           - arrayAccess: elev_low
             objectAccess: elevLow
+          - arrayAccess: endLocation.address.city
+            objectAccess: endCity
+          - arrayAccess: endLocation.address.state
+            objectAccess: endState
+          - arrayAccess: endLocation.address.country
+            objectAccess: endCountry
           - arrayAccess: end_latlng
             objectAccess: endCoords
           - arrayAccess: id
@@ -53,11 +59,11 @@ MapSeven:
             objectAccess: maxCoords
           - arrayAccess: segment_efforts
             objectAccess: segmentEfforts
-          - arrayAccess: geocoding.address.city
+          - arrayAccess: startLocation.address.city
             objectAccess: startCity
-          - arrayAccess: geocoding.address.state
+          - arrayAccess: startLocation.address.state
             objectAccess: startState
-          - arrayAccess: geocoding.address.country
+          - arrayAccess: startLocation.address.country
             objectAccess: startCountry            
           - arrayAccess: start_latlng
             objectAccess: startCoords
@@ -65,6 +71,8 @@ MapSeven:
             objectAccess: summaryPolyline
           - arrayAccess: total_elevation_gain
             objectAccess: totalElevationGain
+          - arrayAccess: total_elevation_loss
+            objectAccess: totalElevationLoss
           - arrayAccess: type
             objectAccess: type
     geocoding:
