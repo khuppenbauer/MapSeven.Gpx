@@ -11,17 +11,17 @@ use Neos\Flow\Annotations\SkipCsrfProtection;
 use Neos\Flow\Mvc\Controller\RestController;
 use Neos\Flow\Mvc\View\ViewInterface;
 use Neos\Flow\Http\Component\SetHeaderComponent;
-use MapSeven\Gpx\Domain\Model\Strava;
-use MapSeven\Gpx\Domain\Repository\StravaRepository;
-use MapSeven\Gpx\Service\StravaService;
+use MapSeven\Gpx\Domain\Model\File;
+use MapSeven\Gpx\Domain\Repository\FileRepository;
+use MapSeven\Gpx\Service\FileService;
 use MapSeven\Gpx\Service\UtilityService;
 
 /**
- * Strava controller for the MapSeven.Gpx package
+ * File controller for the MapSeven.Gpx package
  *
  * @Flow\Scope("singleton")
  */
-class StravaController extends RestController
+class FileController extends RestController
 {
 
     const JSON_VIEW = 'Neos\\Flow\\Mvc\\View\JsonView';
@@ -29,25 +29,19 @@ class StravaController extends RestController
     /**
      * @var string 
      */
-    protected $resourceArgumentName = 'strava';
-
-    /**
-     * @Flow\InjectConfiguration("strava.api")
-     * @var array
-     */
-    protected $apiSettings;
+    protected $resourceArgumentName = 'file';
 
     /**
      * @Flow\Inject
-     * @var StravaRepository
+     * @var FileRepository
      */
-    protected $stravaRepository;
-
+    protected $fileRepository;
+    
     /**
      * @Flow\Inject
-     * @var StravaService
+     * @var FileService
      */
-    protected $stravaService;
+    protected $fileService;
 
     /**
      * @Flow\Inject
@@ -57,13 +51,20 @@ class StravaController extends RestController
 
 
     /**
+     * converts tags from select2 library
+     */
+    public function initializeCreateAction()
+    {
+    }
+
+    /**
      * List Action
      * 
      * @return void
      */
     public function listAction()
     {
-        $activities = $this->stravaRepository->findAll();
+        $activities = $this->fileRepository->findAll();
         $this->response->setComponentParameter(SetHeaderComponent::class, 'X-Total-Count', $activities->count());
         $this->view->assign('value', $activities);
     }
@@ -71,56 +72,56 @@ class StravaController extends RestController
     /**
      * Show Action
      * 
-     * @param Strava $strava
+     * @param File $file
      * @return void
      */
-    public function showAction(Strava $strava)
+    public function showAction(File $file)
     {
-        $this->view->assign('value', $strava);
+        $this->view->assign('value', $file);
     }
 
     /**
      * Create Action
      * 
      * @SkipCsrfProtection
-     * @param Strava $strava
+     * @param string $filename
      * @return void
      */
-    public function createAction(Strava $strava)
+    public function createAction($filename)
     {
-        $athlete = $this->utilityService->requestUri($this->apiSettings, ['athlete']);
-        $strava = $this->stravaService->addActivity($strava->getId(), $athlete['username']);
+        $xml = file_get_contents($filename);
+        $file = $this->fileService->import($filename, $xml);
         $this->persistenceManager->persistAll();
-        $this->utilityService->emitActivityCreated($strava);
-        $this->view->assign('value', $strava);
+        $this->utilityService->emitActivityCreated($file);
+        $this->view->assign('value', $file);
     }
 
     /**
      * Update Action
      * 
      * @SkipCsrfProtection
-     * @param Strava $strava
+     * @param File $file
      * @return void
      */
-    public function updateAction(Strava $strava)
+    public function updateAction(File $file)
     {
-        $this->stravaRepository->update($strava);
+        $this->fileRepository->update($file);
         $this->persistenceManager->persistAll();
-        $this->utilityService->emitActivityUpdated($strava);
-        $this->view->assign('value', $strava);
+        $this->utilityService->emitActivityUpdated($file);
+        $this->view->assign('value', $file);
     }
 
     /**
      * Delete Action
      * 
      * @SkipCsrfProtection
-     * @param Strava $strava
+     * @param File $file
      * @return void
      */
-    public function deleteAction(Strava $strava)
+    public function deleteAction(File $file)
     {
-        $this->stravaRepository->remove($strava);
-        $this->utilityService->emitActivityDeleted($strava);
+        $this->fileRepository->remove($file);
+        $this->utilityService->emitActivityDeleted($file);
         $this->response->setStatusCode(204);
     }
 

@@ -9,7 +9,6 @@ namespace MapSeven\Gpx\Service;
 use Neos\Flow\Annotations as Flow;
 use Neos\Utility\ObjectAccess;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
-use MapSeven\Gpx\Domain\Model\Strava;
 
 /**
  * Webhook Service
@@ -33,18 +32,17 @@ class WebhookService
 
 
     /**
-     * Sends message with Strava Activity Data to configured webhook
+     * Sends message with Activity Data to configured webhook
      * 
-     * 
-     * @param Strava $strava
+     * @param $object
      */
-    public function sendMessage(Strava $strava)
+    public function sendMessage($object)
     {
         if (!empty($this->urls)) {
             foreach ($this->urls as $url) {
                 $client = new \GuzzleHttp\Client();
                 $client->request('POST', $url, [
-                    'json' => $this->transformObject($strava)
+                    'json' => $this->transformObject($object)
                 ]);
             }
         }

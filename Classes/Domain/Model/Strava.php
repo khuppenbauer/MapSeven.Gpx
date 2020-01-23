@@ -14,7 +14,7 @@ use Flowpack\ElasticSearch\Annotations as ElasticSearch;
  * Strava Model
  * 
  * @Flow\Entity
- * @ElasticSearch\Indexable("strava", typeName="_doc")
+ * @ElasticSearch\Indexable("gpx", typeName="_doc")
  */
 class Strava extends Gpx
 {

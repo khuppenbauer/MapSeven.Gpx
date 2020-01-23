@@ -26,15 +26,15 @@ class Package extends BasePackage
     {
         $dispatcher = $bootstrap->getSignalSlotDispatcher();
 
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityCreated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityUpdated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityDeleted', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityCreated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityDeleted', 'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
 
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityCreated', 'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityUpdated', 'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityCreated', 'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated', 'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
 
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityCreated', 'MapSeven\Gpx\Service\FileService', 'createFile');
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityUpdated', 'MapSeven\Gpx\Service\FileService', 'createFile');
-        $dispatcher->connect('MapSeven\Gpx\Controller\StravaController', 'activityDeleted', 'MapSeven\Gpx\Service\FileService', 'deleteFile');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityCreated', 'MapSeven\Gpx\Service\ExportService', 'createFile');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated', 'MapSeven\Gpx\Service\ExportService', 'createFile');
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityDeleted', 'MapSeven\Gpx\Service\ExportService', 'deleteFile');
     }
 }

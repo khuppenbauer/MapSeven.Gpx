@@ -9,16 +9,16 @@ namespace MapSeven\Gpx\GraphQL\Resolver;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use t3n\GraphQL\ResolverInterface;
-use MapSeven\Gpx\Domain\Model\Strava;
+use MapSeven\Gpx\Domain\Model\File;
 use MapSeven\Gpx\Service\UtilityService;
 
 /**
- * StravaResolver for the MapSeven.Gpx package
+ * FileResolver for the MapSeven.Gpx package
  *
  */
-class StravaResolver implements ResolverInterface
+class FileResolver implements ResolverInterface
 {
-
+    
     /**
      * @Flow\Inject
      * @var UtilityService
@@ -30,26 +30,26 @@ class StravaResolver implements ResolverInterface
      * @var PersistenceManagerInterface
      */
     protected $persistenceManager;
-    
 
-    public function identifier(Strava $strava)
+
+    public function identifier(File $file)
     {
-        return $this->persistenceManager->getIdentifierByObject($strava);
+        return $this->persistenceManager->getIdentifierByObject($file);
     }
 
-    public function date(Strava $strava)
+    public function date(File $file)
     {
-        return $strava->getDate()->format('Y-m-d');
+        return $file->getDate()->format('Y-m-d');
     }
 
-    public function slug(Strava $strava)
+    public function slug(File $file)
     {
-        return $strava->getDate()->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($strava->getName());
+        return $file->getDate()->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($file->getName());
     }
 
-    public function coords(Strava $strava)
+    public function coords(File $file)
     {
-        $gpxFile = $strava->getGpxFile();
+        $gpxFile = $file->getGpxFile();
         $coords = $this->utilityService->convertGpx($gpxFile);
         return $coords;
     }

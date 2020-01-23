@@ -9,10 +9,10 @@ namespace MapSeven\Gpx\Command;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cli\CommandController;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
-use MapSeven\Gpx\Service\StravaService;
-use MapSeven\Gpx\Service\FileService;
 use MapSeven\Gpx\Domain\Repository\StravaRepository;
-use MapSeven\Gpx\Domain\Model\Strava;
+use MapSeven\Gpx\Service\UtilityService;
+use MapSeven\Gpx\Service\StravaService;
+use MapSeven\Gpx\Service\ExportService;
 
 /**
  * Strava Command controller for the MapSeven.Gpx package
@@ -36,15 +36,21 @@ class StravaCommandController extends CommandController
     
     /**
      * @Flow\Inject
+     * @var UtilityService
+     */
+    protected $utilityService;
+
+    /**
+     * @Flow\Inject
      * @var StravaService
      */
     protected $stravaService;
 
     /**
      * @Flow\Inject
-     * @var FileService
+     * @var ExportService
      */
-    protected $fileService;
+    protected $exportService;
 
     /**
      * @Flow\Inject
@@ -61,24 +67,29 @@ class StravaCommandController extends CommandController
      */
     public function importCommand($page = 1, $perPage = 30) 
     {
-        $athlete = $this->stravaService->requestUri($this->apiSettings['base_uri'], ['athlete']);
+        $athlete = $this->utilityService->requestUri($this->apiSettings, ['athlete']);
         $this->addAthleteActivities($page, $perPage, $athlete['username']);
     }
     
     /**
      * Update Strava Activities
+     * 
+     * @param boolean $requestData
      */
     public function updateCommand($requestData = false) 
     {
-        $athlete = $this->stravaService->requestUri($this->apiSettings['base_uri'], ['athlete']);
+        $athlete = $this->utilityService->requestUri($this->apiSettings, ['athlete']);
         $stravaActivities = $this->stravaRepository->findAll();
         foreach ($stravaActivities as $stravaActivity) {
             if ($requestData === true) {
-                $strava = $this->stravaService->addActivity($stravaActivity->getId(), $athlete['username']);
+                $this->stravaService->addActivity($stravaActivity->getId(), $athlete['username']);
                 sleep(1);                
             } else {
+                $stravaActivity->setUpdated(new \DateTime());
                 $this->stravaRepository->update($stravaActivity);
             }
+            $this->outputLine('Update ' . $stravaActivity->getName());
+            $this->utilityService->emitActivityUpdated($stravaActivity);
         }
     }
 
@@ -89,7 +100,7 @@ class StravaCommandController extends CommandController
     {
         $stravaActivities = $this->stravaRepository->findAll();
         foreach ($stravaActivities as $stravaActivity) {
-            $filename = $this->fileService->createFile($stravaActivity);
+            $filename = $this->exportService->createFile($stravaActivity);
             $this->outputLine('File ' . $filename . ' created');
         }
     }
@@ -112,13 +123,14 @@ class StravaCommandController extends CommandController
             'per_page' => $perPage
         ];
 
-        $activities = $this->stravaService->requestUri($this->apiSettings['base_uri'], $uriSegments, $queryParams, true);
+        $activities = $this->utilityService->requestUri($this->apiSettings, $uriSegments, $queryParams, true);
         if (!empty($activities) && $page > 0) {
             foreach ($activities as $activity) {
                 $strava = $this->stravaService->addActivity($activity['id'], $athlete);
                 if (!empty($strava)) {
                     $this->persistenceManager->persistAll();
                     $this->outputLine('Add ' . $activity['name']);
+                    $this->utilityService->emitActivityCreated($strava);
                     sleep(1);
                 }
             }

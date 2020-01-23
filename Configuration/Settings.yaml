@@ -102,8 +102,8 @@ t3n:
             typeDefs: 'resource://MapSeven.Gpx/Private/GraphQL/schema.root.graphql'
             resolvers:
               Query: 'MapSeven\Gpx\GraphQL\Resolver\QueryResolver'
+              File: 'MapSeven\Gpx\GraphQL\Resolver\FileResolver'
               Strava: 'MapSeven\Gpx\GraphQL\Resolver\StravaResolver'
-              Gpx: 'MapSeven\Gpx\GraphQL\Resolver\GpxResolver'
         schemaDirectives:
           auth: 't3n\GraphQL\Directive\AuthDirective'
           cached: 't3n\GraphQL\Directive\CachedDirective'

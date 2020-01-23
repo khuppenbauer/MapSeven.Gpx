@@ -34,3 +34,15 @@
   defaults:
     '@package': MapSeven.Gpx
     '@controller': Strava
+
+- name: 'Api Gpx Files'
+  uriPattern: 'api/v1/files'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': File
+
+- name: 'Api Gpx Files'
+  uriPattern: 'api/v1/files/{file.__identity}'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': File

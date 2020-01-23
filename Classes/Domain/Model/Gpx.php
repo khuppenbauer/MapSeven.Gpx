@@ -16,7 +16,6 @@ use Neos\Media\Domain\Model\Asset;
  * 
  * @Flow\Entity
  * @ORM\InheritanceType("JOINED")
- * @ElasticSearch\Indexable("strava", typeName="_doc")
  */
 class Gpx 
 {

@@ -1,11 +1,11 @@
 type Query {
-  strava(id: ID, identifier: ID): Strava
-  stravaActivities: [Strava]
-  gpx(identifier: ID!): Gpx
-  gpxActivities: [Gpx]
+  stravaActivity(id: ID, identifier: ID): Strava
+  allStravaActivities: [Strava]
+  fileActivity(identifier: ID!): File
+  allFileActivities: [File]
 }
 
-type Gpx {
+type File {
   identifier: ID!
   slug: String
   name: String!

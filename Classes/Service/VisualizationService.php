@@ -10,9 +10,9 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use MapSeven\Gpx\Domain\Model\Strava;
-use MapSeven\Gpx\Domain\Model\Gpx;
+use MapSeven\Gpx\Domain\Model\File;
 use MapSeven\Gpx\Domain\Repository\StravaRepository;
-use MapSeven\Gpx\Domain\Repository\GpxRepository;
+use MapSeven\Gpx\Domain\Repository\FileRepository;
 
 /**
  * Visualization Service
@@ -36,9 +36,9 @@ class VisualizationService
 
     /**
      * @Flow\Inject
-     * @var GpxRepository
+     * @var FileRepository
      */
-    protected $gpxRepository;
+    protected $fileRepository;
 
     /**
      * @Flow\Inject
@@ -58,10 +58,15 @@ class VisualizationService
      */
     protected $resourceManager;
 
+    /**
+     * @Flow\Inject
+     * @var UtilityService
+     */
+    protected $utilityService;
+
 
     /**
      * Create Visualization
-     * 
      * 
      * @param object $object
      */
@@ -75,7 +80,9 @@ class VisualizationService
         $requestOptions = [
             'http_errors' => false
         ];
-        $headers = $this->getHeaders();
+        $headers = [
+            'headers' => $this->utilityService->getHeaders($this->apiSettings)
+        ];
         $identifier = $this->persistenceManager->getIdentifierByObject($object);
 
         $activityOptions = [
@@ -107,53 +114,10 @@ class VisualizationService
             $object->setVisualizationUrl($visualizationUrl);
             if ($object instanceof Strava) {
                 $this->stravaRepository->update($object);
-            } elseif ($object instanceof Gpx) {
-                $this->gpxRepository->update($object);
+            } elseif ($object instanceof File) {
+                $this->fileRepository->update($object);
             }
             $this->persistenceManager->persistAll();            
-        }
-    }
-
-    /**
-     * Returns Headers
-     * 
-     * @return array
-     */
-    private function getHeaders()
-    {
-        return [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => $this->getToken()   
-            ]
-        ];
-    }
-    
-    /**
-     * Returns Access Token
-     * 
-     * @return string
-     */
-    private function getToken()
-    {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('POST', $this->apiSettings['oauth_uri'], [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode($this->apiSettings['basicAuth'])
-            ],
-            'form_params' => $this->apiSettings['auth']
-        ]);
-        if ($response->getStatusCode() === 200) {
-            $content = json_decode($response->getBody()->getContents(), true);
-            $accessToken = $content['access_token'];
-            if (isset($content['refresh_token'])) {
-                $refreshToken = $content['refresh_token'];
-                $settings = $this->configurationSource->load(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS);
-                $settings = Arrays::setValueByPath($settings, 'MapSeven.Gpx.visualization.api.auth.refresh_token', $refreshToken);
-                $this->configurationSource->save(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, $settings);
-                $this->configurationManager->refreshConfiguration();                
-            }
-            return $accessToken;
         }
     }
 }

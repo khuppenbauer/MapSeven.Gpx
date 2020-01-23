@@ -7,15 +7,11 @@ namespace MapSeven\Gpx\Service;
  *                                                                           */
 
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Configuration\Source\YamlSource;
-use Neos\Flow\Configuration\ConfigurationManager;
-use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Utility\Arrays;
 use Neos\Utility\ObjectAccess;
 use MapSeven\Gpx\Domain\Model\Strava;
 use MapSeven\Gpx\Domain\Repository\StravaRepository;
-use Neos\Media\Domain\Model\Document;
-use Neos\Media\Domain\Repository\AssetRepository;
+use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * Strava Service
@@ -42,36 +38,18 @@ class StravaService
      * @var array
      */
     protected $geocodingSettings;
-    
-    /**
-     * @var YamlSource
-     * @Flow\Inject
-     */
-    protected $configurationSource;
-    
-    /**
-     * @Flow\Inject
-     * @var ConfigurationManager
-     */
-    protected $configurationManager;
-    
-    /**
-     * @Flow\Inject
-     * @var ResourceManager
-     */
-    protected $resourceManager;
-    
-    /**
-     * @Flow\Inject
-     * @var AssetRepository
-     */
-    protected $assetRepository;
 
     /**
      * @Flow\Inject
      * @var StravaRepository
      */
     protected $stravaRepository;
+
+    /**
+     * @Flow\Inject
+     * @var UtilityService
+     */
+    protected $utilityService;
     
     /**
      * @var array
@@ -110,6 +88,25 @@ class StravaService
             return $strava;
         }
     }
+
+    /**
+     * Returns transformed activity object
+     * 
+     * @param array $activity
+     * @param Strava $strava
+     * @return Strava
+     */
+    private function transformArray($activity, $strava)
+    {
+        $strava->setDate(new \DateTime($activity['start_date_local']));
+        $strava->setActive(true);
+        foreach ($this->mappingKeys['activity'] as $property) {
+            $propertyValue = Arrays::getValueByPath($activity, $property['arrayAccess']);
+            ObjectAccess::setProperty($strava, $property['objectAccess'], $propertyValue);
+        }
+        $strava->setGpxFile($this->gpxFile);
+        return $strava;
+    }
     
     /**
      * Returns activity data
@@ -123,12 +120,12 @@ class StravaService
             'activities',
             $activityId,
         ];
-        $activity = $this->requestUri($this->apiSettings['base_uri'], $uriSegments);
+        $activity = $this->utilityService->requestUri($this->apiSettings, $uriSegments);
         if ($activity['visibility'] !== 'everyone') {
             return;
         }
         $photoItems = [];
-        $photos = $this->requestUri($this->apiSettings['base_uri'], array_merge($uriSegments, ['photos']), ['size' => 600]);
+        $photos = $this->utilityService->requestUri($this->apiSettings, array_merge($uriSegments, ['photos']), ['size' => 600]);
         foreach ($photos as $key => $photo) {
             $photoItems[] = $photo['urls'][600];
         }
@@ -136,7 +133,7 @@ class StravaService
         $this->bounds = $this->generateBounds($activityData);
         $this->gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
         $activity['photos'] = $photoItems;                   
-        $activity['geocoding'] = $this->requestUri($this->geocodingSettings['base_uri'], ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['start_latitude'], 'lon' => $activity['start_longitude'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
+        $activity['geocoding'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['start_latitude'], 'lon' => $activity['start_longitude'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
         $activity['bounds'] = $this->bounds;
         return $activity;
     }
@@ -157,7 +154,7 @@ class StravaService
             'streams',
             $type
         ];
-        $streams = $this->requestUri($this->apiSettings['base_uri'], $uriSegments, ['resolution' => $resolution]);
+        $streams = $this->utilityService->requestUri($this->apiSettings, $uriSegments, ['resolution' => $resolution]);
         $data = [];
         foreach ($streams as $item) {
             foreach ($item['data'] as $key => $dataItem) {
@@ -168,22 +165,25 @@ class StravaService
     }
 
     /**
-     * Returns transformed activity object
+     * Returns Bounds
      * 
-     * @param array $activity
-     * @param Strava $strava
-     * @return Strava
+     * @param array $data
+     * @return array
      */
-    private function transformArray($activity, $strava)
+    private function generateBounds($data)
     {
-        $strava->setDate(new \DateTime($activity['start_date_local']));
-        $strava->setActive(true);
-        foreach ($this->mappingKeys['activity'] as $property) {
-            $propertyValue = Arrays::getValueByPath($activity, $property['arrayAccess']);
-            ObjectAccess::setProperty($strava, $property['objectAccess'], $propertyValue);
+        foreach ($data as $item) {
+            $lat[] = round($item['latlng'][0], 2);
+            $lng[] = round($item['latlng'][1], 2);   
         }
-        $strava->setGpxFile($this->gpxFile);
-        return $strava;
+        return [
+            'minLat' => min($lat),
+            'minLng' => min($lng),
+            'maxLat' => max($lat),
+            'maxLng' => max($lng),
+            'minLatLon' => ['lat' => min($lat), 'lon' => min($lng)],
+            'maxLatLon' => ['lat' => max($lat), 'lon' => max($lng)]            
+        ];
     }
     
     /**
@@ -214,157 +214,7 @@ class StravaService
             $trkpnt->addAttribute('lon', $item['latlng'][1]);
             $trkpnt->addChild('ele', $item['altitude']);
         }
-        $filename = substr($date, 0,10) . '-' . static::sanitizeFilename($name) . '-' . substr(md5($date), 0, 6);
-        return $this->saveXMLDocument($filename, $xml->asXML(), 'strava');
-    }
-    
-    /**
-     * Returns saved GPX File
-     * 
-     * @param string $filename
-     * @param string $content
-     * @param string $source
-     * @return Asset
-     */
-    public function saveXMLDocument($filename, $content, $source) 
-    {
-        $existingDocument = $this->assetRepository->findOneByTitle($filename);
-        if (!empty($existingDocument)) {
-            return $existingDocument;
-        }
-        $dom = new \DOMDocument("1.0");
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
-        $dom->loadXML($content);
-        $resource = $this->resourceManager->importResourceFromContent($dom->saveXML(), $filename . '.gpx');
-        $asset = new Document($resource);
-        $asset->setTitle($filename);
-        $asset->setAssetSourceIdentifier($source);
-        $this->assetRepository->add($asset);
-        $this->gpxFile = $asset;
-        return $asset;
-    }
-
-    /**
-     * Returns Bounds
-     * 
-     * @param array $data
-     * @return array
-     */
-    private function generateBounds($data)
-    {
-        foreach ($data as $item) {
-            $lat[] = round($item['latlng'][0], 2);
-            $lng[] = round($item['latlng'][1], 2);   
-        }
-        return [
-            'minLat' => min($lat),
-            'minLng' => min($lng),
-            'maxLat' => max($lat),
-            'maxLng' => max($lng),
-            'minLatLon' => ['lat' => min($lat), 'lon' => min($lng)],
-            'maxLatLon' => ['lat' => max($lat), 'lon' => max($lng)]            
-        ];
-    }
-
-    /**
-     * Returns coords from gpx file
-     *
-     * @param Document $gpxFile
-     * @return array
-     */
-    public function convertGpx(Document $gpxFile)
-    {
-        $url = $this->resourceManager->getPublicPersistentResourceUri($gpxFile->getResource());
-        $xml = file_get_contents($url);
-        $content = simplexml_load_string($xml);
-        $array = json_decode(json_encode($content), true);
-        $points = Arrays::getValueByPath($array, 'trk.trkseg.trkpt');
-        $coords = [];
-        foreach ($points as $point) {
-            $coords[] = [
-                'lat' => $point['@attributes']['lat'],
-                'lon' => $point['@attributes']['lon'],
-                'ele' => $point['ele']
-            ];
-        }
-        return $coords;
-    }
-
-    /**
-     * Returns sanitized filename
-     * 
-     * @param string $title
-     * @return string
-     */
-    static public function sanitizeFilename($title) 
-    {
-        $title = str_replace(['ä','ö','ü','ß', ' '], ['ae','oe','ue','ss', '-'], strtolower($title));
-        $title = preg_replace("/[^a-z0-9\-_]/", "", $title);
-        return $title;        
-    }
-    
-    /**
-     * Returns result from Api Request
-     * 
-     * @param string $baseUri
-     * @param array $uriSegments
-     * @param array $queryParams
-     * @param boolean $includeToken
-     * @return array
-     */
-    public function requestUri($baseUri, $uriSegments, $queryParams = [], $includeToken = true)
-    {
-        $uri = implode('/', $uriSegments);
-        if (!empty($queryParams)) {
-            $uri .= '?' . http_build_query($queryParams);
-        }
-        $data = [];
-        $client = new \GuzzleHttp\Client(['base_uri' => $baseUri]);
-        $response = $client->request('GET', $uri, ['headers' => $this->getHeaders($includeToken)]);
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody()->getContents(), true);
-        }
-        return $data;
-    }
-    
-    /**
-     * Returns Headers
-     * 
-     * @param boolean $includeToken
-     * @return array
-     */
-    private function getHeaders($includeToken = true)
-    {
-        $headers = [
-            'Content-Type' => 'application/json'
-        ];
-        if ($includeToken === true) {
-            $headers['Authorization'] = 'Bearer ' . $this->getToken();
-        }
-        return $headers;
-    }
-    
-    /**
-     * Returns Access Token
-     * 
-     * @return string
-     */
-    private function getToken()
-    {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('POST', $this->apiSettings['oauth_uri'], [
-            'form_params' => $this->apiSettings['auth']
-        ]);
-        if ($response->getStatusCode() === 200) {
-            $content = json_decode($response->getBody()->getContents(), true);
-            $accessToken = $content['access_token'];
-            $refreshToken = $content['refresh_token'];
-            $settings = $this->configurationSource->load(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS);
-            $settings = Arrays::setValueByPath($settings, 'MapSeven.Gpx.strava.api.auth.refresh_token', $refreshToken);
-            $this->configurationSource->save(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, $settings);
-            $this->configurationManager->refreshConfiguration();                
-            return $accessToken;
-        }
+        $filename = substr($date, 0,10) . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($date), 0, 6);
+        return $this->utilityService->saveXMLDocument($filename, $xml->asXML(), 'strava');
     }
 }

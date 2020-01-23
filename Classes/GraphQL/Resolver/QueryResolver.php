@@ -8,8 +8,12 @@ namespace MapSeven\Gpx\GraphQL\Resolver;
 
 use Neos\Flow\Annotations as Flow;
 use t3n\GraphQL\ResolverInterface;
-use MapSeven\Gpx\Domain\Repository\StravaRepository;
+use MapSeven\Gpx\Domain\Repository\FileRepository;
 use MapSeven\Gpx\Domain\Repository\GpxRepository;
+use MapSeven\Gpx\Domain\Repository\StravaRepository;
+use MapSeven\Gpx\Domain\Model\File;
+use MapSeven\Gpx\Domain\Model\Gpx;
+use MapSeven\Gpx\Domain\Model\Strava;
 
 /**
  * QueryResolver for the MapSeven.Gpx package
@@ -20,15 +24,21 @@ class QueryResolver implements ResolverInterface
 
     /**
      * @Flow\Inject
-     * @var StravaRepository
+     * @var FileRepository
      */
-    protected $stravaRepository;
+    protected $fileRepository;
 
     /**
      * @Flow\Inject
      * @var GpxRepository
      */
     protected $gpxRepository;
+
+    /**
+     * @Flow\Inject
+     * @var StravaRepository
+     */
+    protected $stravaRepository;
 
 
     /**
@@ -37,7 +47,7 @@ class QueryResolver implements ResolverInterface
      * @param array $variables
      * @return array
      */
-    public function stravaActivities($_, $variables)
+    public function allStravaActivities($_, $variables)
     {
         return $this->stravaRepository->findAll();
     }
@@ -48,7 +58,7 @@ class QueryResolver implements ResolverInterface
      * @param array $variables
      * @return Strava
      */
-    public function strava($_, $variables)
+    public function stravaActivity($_, $variables)
     {
         if (isset($variables['id'])) {
             return $this->stravaRepository->findOneById($variables['id']);
@@ -63,19 +73,19 @@ class QueryResolver implements ResolverInterface
      * @param array $variables
      * @return array
      */
-    public function gpxActivities($_, $variables)
+    public function allFileActivities($_, $variables)
     {
-        return $this->gpxRepository->findAll();
+        return $this->fileRepository->findAll();
     }
 
     /**
      * 
      * @param type $_
      * @param array $variables
-     * @return Strava
+     * @return File
      */
-    public function gpx($_, $variables)
+    public function fileActivity($_, $variables)
     {
-        return $this->gpxRepository->findByIdentifier($variables['identifier']);
+        return $this->fileRepository->findByIdentifier($variables['identifier']);
     }
 }

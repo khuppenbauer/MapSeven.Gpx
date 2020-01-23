@@ -12,6 +12,8 @@ privilegeTargets:
       matcher: 'method(public MapSeven\Gpx\Controller\AuthenticationController->authAction())'
     'MapSeven.Gpx:StravaImport':
       matcher: 'method(public MapSeven\Gpx\Controller\StravaController->(create|update|delete)Action())'
+    'MapSeven.Gpx:FileImport':
+      matcher: 'method(public MapSeven\Gpx\Controller\FileController->(create|update|delete)Action())'
 
 roles:
   'MapSeven.Gpx:Api':
@@ -19,4 +21,6 @@ roles:
       - privilegeTarget: 'MapSeven.Gpx:Auth'
         permission: GRANT
       - privilegeTarget: 'MapSeven.Gpx:StravaImport'
+        permission: GRANT
+      - privilegeTarget: 'MapSeven.Gpx:FileImport'
         permission: GRANT
