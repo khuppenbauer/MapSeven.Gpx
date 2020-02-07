@@ -142,7 +142,8 @@ class StravaService
         $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude');
         $this->bounds = $this->generateBounds($activityData);
         $this->gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
-        $activity['total_elevation_loss'] = $this->totalElevationLoss;
+        $activity['total_elevation_gain'] = round($this->totalElevationGain, 2);
+        $activity['total_elevation_loss'] = round($this->totalElevationLoss, 2);
         $activity['photos'] = $photoItems;                   
         $activity['startLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['start_latlng'][0], 'lon' => $activity['start_latlng'][1], 'normalizecity' => 1, 'accept-language' => 'de'], false);
         $activity['endLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['end_latlng'][0], 'lon' => $activity['end_latlng'][1], 'normalizecity' => 1, 'accept-language' => 'de'], false);
@@ -184,6 +185,8 @@ class StravaService
      */
     private function generateBounds($data)
     {
+        $this->totalElevationGain = 0;
+        $this->totalElevationLoss = 0;
         foreach ($data as $item) {
             $lat[] = round($item['latlng'][0], 2);
             $lng[] = round($item['latlng'][1], 2);
