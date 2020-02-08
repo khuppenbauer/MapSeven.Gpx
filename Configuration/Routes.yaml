@@ -30,6 +30,22 @@
     '@controller': Strava
 
 - name: 'Api Strava Activities'
+  uriPattern: 'api/v1/activities/{strava.__identity}.json'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': Strava
+    '@action': showGeoJson
+  httpMethods: ['GET']
+
+- name: 'Api Strava Activities'
+  uriPattern: 'api/v1/activities/{strava.__identity}.gpx'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': Strava
+    '@action': showGpx
+  httpMethods: ['GET']
+
+- name: 'Api Strava Activities'
   uriPattern: 'api/v1/activities/{strava.__identity}'
   defaults:
     '@package': MapSeven.Gpx
@@ -40,6 +56,22 @@
   defaults:
     '@package': MapSeven.Gpx
     '@controller': File
+
+- name: 'Api Gpx Files'
+  uriPattern: 'api/v1/files/{file.__identity}.json'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': File
+    '@action': showGeoJson
+  httpMethods: ['GET']
+
+- name: 'Api Gpx Files'
+  uriPattern: 'api/v1/files/{file.__identity}.gpx'
+  defaults:
+    '@package': MapSeven.Gpx
+    '@controller': File
+    '@action': showGpx
+  httpMethods: ['GET']
 
 - name: 'Api Gpx Files'
   uriPattern: 'api/v1/files/{file.__identity}'

@@ -11,6 +11,7 @@ use Neos\Flow\Annotations\SkipCsrfProtection;
 use Neos\Flow\Mvc\Controller\RestController;
 use Neos\Flow\Mvc\View\ViewInterface;
 use Neos\Flow\Http\Component\SetHeaderComponent;
+use Neos\Flow\ResourceManagement\ResourceManager;
 use MapSeven\Gpx\Domain\Model\File;
 use MapSeven\Gpx\Domain\Repository\FileRepository;
 use MapSeven\Gpx\Service\FileService;
@@ -49,13 +50,12 @@ class FileController extends RestController
      */
     protected $utilityService;
 
-
     /**
-     * converts tags from select2 library
+     * @Flow\Inject
+     * @var ResourceManager
      */
-    public function initializeCreateAction()
-    {
-    }
+    protected $resourceManager;
+
 
     /**
      * List Action
@@ -78,6 +78,37 @@ class FileController extends RestController
     public function showAction(File $file)
     {
         $this->view->assign('value', $file);
+    }
+
+    /**
+     * Show GeoJson Action
+     *
+     * @param File $file
+     * @return void
+     */
+    public function showGeoJsonAction(File $file)
+    {
+        $gpxFile = $file->getGpxFile();
+        $coords = $this->utilityService->convertGpx($gpxFile);
+        $geojson = [
+            'type' => 'LineString',
+            'coordinates' => $coords['geojson']
+        ];
+        $this->view->assign('value', $geojson);
+    }
+
+    /**
+     * Show Gpx Action
+     *
+     * @param File $file
+     * @return void
+     */
+    public function showGpxAction(File $file)
+    {
+        $asset = $file->getGpxFile();
+        $this->response->setComponentParameter(SetHeaderComponent::class, 'Content-Type', $asset->getMediaType());
+        $streamResource = $this->resourceManager->getStreamByResource($asset->getResource());
+        return stream_get_contents($streamResource);
     }
 
     /**

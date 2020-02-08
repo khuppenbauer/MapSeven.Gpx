@@ -11,6 +11,7 @@ use Neos\Flow\Annotations\SkipCsrfProtection;
 use Neos\Flow\Mvc\Controller\RestController;
 use Neos\Flow\Mvc\View\ViewInterface;
 use Neos\Flow\Http\Component\SetHeaderComponent;
+use Neos\Flow\ResourceManagement\ResourceManager;
 use MapSeven\Gpx\Domain\Model\Strava;
 use MapSeven\Gpx\Domain\Repository\StravaRepository;
 use MapSeven\Gpx\Service\StravaService;
@@ -55,6 +56,12 @@ class StravaController extends RestController
      */
     protected $utilityService;
 
+    /**
+     * @Flow\Inject
+     * @var ResourceManager
+     */
+    protected $resourceManager;
+
 
     /**
      * List Action
@@ -77,6 +84,37 @@ class StravaController extends RestController
     public function showAction(Strava $strava)
     {
         $this->view->assign('value', $strava);
+    }
+
+    /**
+     * Show GeoJson Action
+     *
+     * @param Strava $strava
+     * @return void
+     */
+    public function showGeoJsonAction(Strava $strava)
+    {
+        $gpxFile = $strava->getGpxFile();
+        $coords = $this->utilityService->convertGpx($gpxFile);
+        $geojson = [
+            'type' => 'LineString',
+            'coordinates' => $coords['geojson']
+        ];
+        $this->view->assign('value', $geojson);
+    }
+
+    /**
+     * Show Gpx Action
+     *
+     * @param Strava $strava
+     * @return void
+     */
+    public function showGpxAction(Strava $strava)
+    {
+        $asset = $strava->getGpxFile();
+        $this->response->setComponentParameter(SetHeaderComponent::class, 'Content-Type', $asset->getMediaType());
+        $streamResource = $this->resourceManager->getStreamByResource($asset->getResource());
+        return stream_get_contents($streamResource);
     }
 
     /**

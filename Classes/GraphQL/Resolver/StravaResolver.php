@@ -51,6 +51,17 @@ class StravaResolver implements ResolverInterface
     {
         $gpxFile = $strava->getGpxFile();
         $coords = $this->utilityService->convertGpx($gpxFile);
-        return $coords;
+        return $coords['gpx'];
+    }
+
+    public function geoJson(Strava $strava)
+    {
+        $gpxFile = $strava->getGpxFile();
+        $coords = $this->utilityService->convertGpx($gpxFile);
+        $geojson = [
+            'type' => 'LineString',
+            'coordinates' => $coords['geojson']
+        ];
+        return $geojson;
     }
 }

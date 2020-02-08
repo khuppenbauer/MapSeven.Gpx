@@ -86,14 +86,18 @@ class UtilityService
         $content = simplexml_load_string($xml);
         $array = json_decode(json_encode($content), true);
         $points = Arrays::getValueByPath($array, 'trk.trkseg.trkpt');
-        $coords = [];
         foreach ($points as $point) {
-            $coords[] = [
-                'lat' => $point['@attributes']['lat'],
-                'lon' => $point['@attributes']['lon'],
-                'ele' => $point['ele']
+            $gpx[] = [
+                'lat' => (float)$point['@attributes']['lat'],
+                'lon' => (float)$point['@attributes']['lon'],
+                'ele' => (float)$point['ele']
             ];
+            $geojson[] = [(float)$point['@attributes']['lon'], (float)$point['@attributes']['lat']];
         }
+        $coords = [
+            'gpx' => $gpx,
+            'geojson' => $geojson
+        ];
         return $coords;
     }
 

@@ -51,6 +51,17 @@ class FileResolver implements ResolverInterface
     {
         $gpxFile = $file->getGpxFile();
         $coords = $this->utilityService->convertGpx($gpxFile);
-        return $coords;
+        return $coords['gpx'];
+    }
+
+    public function geoJson(File $file)
+    {
+        $gpxFile = $file->getGpxFile();
+        $coords = $this->utilityService->convertGpx($gpxFile);
+        $geojson = [
+            'type' => 'LineString',
+            'coordinates' => $coords['geojson']
+        ];
+        return $geojson;
     }
 }
