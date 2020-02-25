@@ -92,7 +92,7 @@ class UtilityService
                 'lon' => (float)$point['@attributes']['lon'],
                 'ele' => (float)$point['ele']
             ];
-            $geojson[] = [(float)$point['@attributes']['lon'], (float)$point['@attributes']['lat']];
+            $geojson[] = [(float)$point['@attributes']['lon'], (float)$point['@attributes']['lat'], (float)$point['ele']];
         }
         $coords = [
             'gpx' => $gpx,
