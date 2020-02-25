@@ -139,7 +139,7 @@ class StravaService
         foreach ($photos as $key => $photo) {
             $photoItems[] = $photo['urls'][600];
         }
-        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude');
+        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude,time', $activity['start_date_local']);
         $this->bounds = $this->generateBounds($activityData);
         $this->gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
         $activity['total_elevation_gain'] = round($this->totalElevationGain, 2);
@@ -157,10 +157,12 @@ class StravaService
      * @param integer $activityId
      * @param string $resolution
      * @param string $type
+     * @param string $startDate
      * @return array
      */
-    private function getActivityStreamData($activityId, $resolution, $type)
+    private function getActivityStreamData($activityId, $resolution, $type, $startDate)
     {
+        $time = new \DateTime($startDate);
         $uriSegments = [
             'activities',
             $activityId,
@@ -171,7 +173,13 @@ class StravaService
         $data = [];
         foreach ($streams as $item) {
             foreach ($item['data'] as $key => $dataItem) {
-                $data[$key][$item['type']] = $dataItem;                    
+                if ($item['type'] === 'time') {
+                    $time->add(new \DateInterval('PT' . $dataItem . 'S'));
+                    $data[$key][$item['type']] = $time->format('Y-m-d\TH:i:s\Z');
+                    $time = new \DateTime($startDate);
+                } else {
+                    $data[$key][$item['type']] = $dataItem;
+                }
             }
         }
         return $data;
@@ -240,6 +248,7 @@ class StravaService
             $trkpnt->addAttribute('lat', $item['latlng'][0]);
             $trkpnt->addAttribute('lon', $item['latlng'][1]);
             $trkpnt->addChild('ele', $item['altitude']);
+            $trkpnt->addChild('time', $item['time']);
         }
         $filename = substr($date, 0,10) . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($date), 0, 6);
         return $this->utilityService->saveXMLDocument($filename, $xml->asXML(), 'strava');
