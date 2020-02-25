@@ -9,6 +9,7 @@ namespace MapSeven\Gpx\Domain\Model;
 use Neos\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 use Flowpack\ElasticSearch\Annotations as ElasticSearch;
+use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Media\Domain\Model\Asset;
 
 /**
@@ -199,9 +200,21 @@ class Gpx
 
     /**
      * @var string
+     * @Flow\Transient
+     */
+    protected $gpxFileUrl;
+
+    /**
+     * @var string
      * @ORM\Column(nullable=true)
      */
     protected $visualizationUrl;
+
+    /**
+     * @Flow\Inject
+     * @var ResourceManager
+     */
+    protected $resourceManager;
 
 
     /**
@@ -601,6 +614,16 @@ class Gpx
     public function getGpxFile()
     {
         return $this->gpxFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGpxFileUrl()
+    {
+        $uri = $this->resourceManager->getPublicPersistentResourceUri($this->gpxFile->getResource());
+        $gpxFileUrl = str_replace(FLOW_PATH_WEB, $this->domain, $uri);
+        return $uri;
     }
 
     /**
