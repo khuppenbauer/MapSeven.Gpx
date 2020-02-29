@@ -621,9 +621,7 @@ class Gpx
      */
     public function getGpxFileUrl()
     {
-        $uri = $this->resourceManager->getPublicPersistentResourceUri($this->gpxFile->getResource());
-        $gpxFileUrl = str_replace(FLOW_PATH_WEB, $this->domain, $uri);
-        return $uri;
+        return $this->resourceManager->getPublicPersistentResourceUri($this->gpxFile->getResource());
     }
 
     /**
