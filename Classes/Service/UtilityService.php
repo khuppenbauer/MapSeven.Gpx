@@ -121,21 +121,33 @@ class UtilityService
      * @param array $uriSegments
      * @param array $queryParams
      * @param boolean $includeToken
-     * @return array
+     * @param string $method
+     * @param array $body
+     * @return mixed
      */
-    public function requestUri($apiSettings, $uriSegments, $queryParams = [], $includeToken = true)
+    public function requestUri($apiSettings, $uriSegments, $queryParams = [], $includeToken = true, $method = 'GET', $body = null)
     {
         $uri = implode('/', $uriSegments);
         if (!empty($queryParams)) {
             $uri .= '?' . http_build_query($queryParams);
         }
-        $data = [];
         $client = new \GuzzleHttp\Client(['base_uri' => $apiSettings['base_uri']]);
-        $response = $client->request('GET', $uri, ['headers' => $this->getHeaders($apiSettings, $includeToken, 'Bearer ')]);
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getBody()->getContents(), true);
+        $options = [
+            'headers' => $this->getHeaders($apiSettings, $includeToken, 'Bearer ')
+        ];
+        if (!empty($body)) {
+            $options['json'] = $body;
         }
-        return $data;
+        $response = $client->request($method, $uri, $options);
+        if ($response->getStatusCode() === 200) {
+            $contents = $response->getBody()->getContents();
+            $contentType = explode(';', $response->getHeader('Content-Type')[0]);
+            if (in_array('application/json', $contentType)) {
+                return json_decode($contents, true);
+            } else {
+                return $contents;
+            }
+        }
     }
     
     /**
