@@ -201,12 +201,6 @@ class Gpx
 
     /**
      * @var string
-     * @Flow\Transient
-     */
-    protected $gpxFileUrl;
-
-    /**
-     * @var string
      * @ORM\Column(nullable=true)
      */
     protected $visualizationUrl;
@@ -615,14 +609,6 @@ class Gpx
     public function getGpxFile()
     {
         return $this->gpxFile;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGpxFileUrl()
-    {
-        return $this->resourceManager->getPublicPersistentResourceUri($this->gpxFile->getResource());
     }
 
     /**

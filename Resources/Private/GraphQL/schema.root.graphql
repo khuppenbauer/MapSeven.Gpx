@@ -26,7 +26,6 @@ type File {
   startCountry: String
   coords: [Coord]
   geoJson: Geometry
-  gpxFileUrl: String
 }
 
 type Strava {
@@ -58,7 +57,6 @@ type Strava {
   segmentEfforts: [SegmentEffort]
   photos: [String]
   geoJson: Geometry
-  gpxFileUrl: String
 }
 
 type Coord {
