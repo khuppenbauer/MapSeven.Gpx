@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Controller;
 
 /*                                                                           *
@@ -24,11 +25,10 @@ use MapSeven\Gpx\Service\UtilityService;
  */
 class FileController extends RestController
 {
-
     const JSON_VIEW = 'Neos\\Flow\\Mvc\\View\JsonView';
 
     /**
-     * @var string 
+     * @var string
      */
     protected $resourceArgumentName = 'file';
 
@@ -37,7 +37,7 @@ class FileController extends RestController
      * @var FileRepository
      */
     protected $fileRepository;
-    
+
     /**
      * @Flow\Inject
      * @var FileService
@@ -59,7 +59,7 @@ class FileController extends RestController
 
     /**
      * List Action
-     * 
+     *
      * @return void
      */
     public function listAction()
@@ -71,7 +71,7 @@ class FileController extends RestController
 
     /**
      * Show Action
-     * 
+     *
      * @param File $file
      * @return void
      */
@@ -113,7 +113,7 @@ class FileController extends RestController
 
     /**
      * Create Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param string $filename
      * @return void
@@ -129,7 +129,7 @@ class FileController extends RestController
 
     /**
      * Update Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param File $file
      * @return void
@@ -144,7 +144,7 @@ class FileController extends RestController
 
     /**
      * Delete Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param File $file
      * @return void

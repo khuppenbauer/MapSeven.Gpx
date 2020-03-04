@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Controller;
 
 /*                                                                           *
@@ -24,11 +25,10 @@ use MapSeven\Gpx\Service\UtilityService;
  */
 class StravaController extends RestController
 {
-
     const JSON_VIEW = 'Neos\\Flow\\Mvc\\View\JsonView';
 
     /**
-     * @var string 
+     * @var string
      */
     protected $resourceArgumentName = 'strava';
 
@@ -65,7 +65,7 @@ class StravaController extends RestController
 
     /**
      * List Action
-     * 
+     *
      * @return void
      */
     public function listAction()
@@ -77,7 +77,7 @@ class StravaController extends RestController
 
     /**
      * Show Action
-     * 
+     *
      * @param Strava $strava
      * @return void
      */
@@ -119,7 +119,7 @@ class StravaController extends RestController
 
     /**
      * Create Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param Strava $strava
      * @return void
@@ -135,7 +135,7 @@ class StravaController extends RestController
 
     /**
      * Update Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param Strava $strava
      * @return void
@@ -150,7 +150,7 @@ class StravaController extends RestController
 
     /**
      * Delete Action
-     * 
+     *
      * @SkipCsrfProtection
      * @param Strava $strava
      * @return void

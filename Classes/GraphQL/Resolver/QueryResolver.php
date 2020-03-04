@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\GraphQL\Resolver;
 
 /*                                                                           *
@@ -42,7 +43,7 @@ class QueryResolver implements ResolverInterface
 
 
     /**
-     * 
+     *
      * @param type $_
      * @param array $variables
      * @return array
@@ -53,7 +54,7 @@ class QueryResolver implements ResolverInterface
     }
 
     /**
-     * 
+     *
      * @param type $_
      * @param array $variables
      * @return Strava
@@ -68,7 +69,7 @@ class QueryResolver implements ResolverInterface
     }
 
     /**
-     * 
+     *
      * @param type $_
      * @param array $variables
      * @return array
@@ -79,7 +80,7 @@ class QueryResolver implements ResolverInterface
     }
 
     /**
-     * 
+     *
      * @param type $_
      * @param array $variables
      * @return File

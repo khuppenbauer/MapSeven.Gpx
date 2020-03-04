@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -15,10 +16,10 @@ use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * Strava Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class StravaService 
+class StravaService
 {
 
     /**
@@ -26,10 +27,10 @@ class StravaService
      * @var array
      */
     protected $apiSettings;
-    
+
     /**
      * @Flow\InjectConfiguration("strava.mappingKeys")
-     * @var array 
+     * @var array
      */
     protected $mappingKeys;
 
@@ -50,7 +51,7 @@ class StravaService
      * @var UtilityService
      */
     protected $utilityService;
-    
+
     /**
      * @var array
      */
@@ -74,7 +75,7 @@ class StravaService
 
     /**
      * Returns strava activity
-     * 
+     *
      * @param integer $activityId
      * @param string $athlete
      * @return Strava
@@ -101,7 +102,7 @@ class StravaService
 
     /**
      * Returns transformed activity object
-     * 
+     *
      * @param array $activity
      * @param Strava $strava
      * @return Strava
@@ -117,10 +118,10 @@ class StravaService
         $strava->setGpxFile($this->gpxFile);
         return $strava;
     }
-    
+
     /**
      * Returns activity data
-     * 
+     *
      * @param integer $activityId
      * @return array
      */
@@ -135,25 +136,41 @@ class StravaService
             return;
         }
         $photoItems = [];
-        $photos = $this->utilityService->requestUri($this->apiSettings, array_merge($uriSegments, ['photos']), ['size' => 600]);
+        $photos = $this->utilityService->requestUri($this->apiSettings, array_merge($uriSegments, ['photos']),
+            ['size' => 600]);
         foreach ($photos as $key => $photo) {
             $photoItems[] = $photo['urls'][600];
         }
-        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude,time', $activity['start_date_local']);
+        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude,time',
+            $activity['start_date_local']);
         $this->bounds = $this->generateBounds($activityData);
         $this->gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
         $activity['total_elevation_gain'] = round($this->totalElevationGain, 2);
         $activity['total_elevation_loss'] = round($this->totalElevationLoss, 2);
-        $activity['photos'] = $photoItems;                   
-        $activity['startLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['start_latlng'][0], 'lon' => $activity['start_latlng'][1], 'normalizecity' => 1, 'accept-language' => 'de'], false);
-        $activity['endLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $activity['end_latlng'][0], 'lon' => $activity['end_latlng'][1], 'normalizecity' => 1, 'accept-language' => 'de'], false);
+        $activity['photos'] = $photoItems;
+        $activity['startLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
+            'key' => $this->geocodingSettings['key'],
+            'format' => 'json',
+            'lat' => $activity['start_latlng'][0],
+            'lon' => $activity['start_latlng'][1],
+            'normalizecity' => 1,
+            'accept-language' => 'de'
+        ], false);
+        $activity['endLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
+            'key' => $this->geocodingSettings['key'],
+            'format' => 'json',
+            'lat' => $activity['end_latlng'][0],
+            'lon' => $activity['end_latlng'][1],
+            'normalizecity' => 1,
+            'accept-language' => 'de'
+        ], false);
         $activity['bounds'] = $this->bounds;
         return $activity;
     }
-    
+
     /**
      * Returns Activity Sream Data
-     * 
+     *
      * @param integer $activityId
      * @param string $resolution
      * @param string $type
@@ -187,7 +204,7 @@ class StravaService
 
     /**
      * Returns Bounds
-     * 
+     *
      * @param array $data
      * @return array
      */
@@ -223,13 +240,13 @@ class StravaService
 
     /**
      * Write GPX Data to File System
-     * 
+     *
      * @param string $name
      * @param string $date
      * @param array $data
      * @return Asset
      */
-    private function writeGpx($name, $date, $data) 
+    private function writeGpx($name, $date, $data)
     {
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><gpx creator="StravaGPX Android" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"></gpx>');
         $metadata = $xml->addChild('metadata');
@@ -250,7 +267,8 @@ class StravaService
             $trkpnt->addChild('ele', $item['altitude']);
             $trkpnt->addChild('time', $item['time']);
         }
-        $filename = substr($date, 0,10) . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($date), 0, 6);
+        $filename = substr($date, 0, 10) . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($date), 0,
+                6);
         return $this->utilityService->saveXMLDocument($filename, $xml->asXML(), 'strava');
     }
 }

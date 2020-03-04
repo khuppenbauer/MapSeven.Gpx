@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -12,10 +13,10 @@ use Neos\Flow\Persistence\PersistenceManagerInterface;
 
 /**
  * Webhook Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class WebhookService 
+class WebhookService
 {
 
     /**
@@ -23,7 +24,7 @@ class WebhookService
      * @var array
      */
     protected $urls;
-    
+
     /**
      * @Flow\Inject
      * @var PersistenceManagerInterface
@@ -33,7 +34,7 @@ class WebhookService
 
     /**
      * Sends message with Activity Data to configured webhook
-     * 
+     *
      * @param $object
      */
     public function sendMessage($object)
@@ -47,10 +48,10 @@ class WebhookService
             }
         }
     }
-    
+
     /**
      * Returns transformed object
-     * 
+     *
      * @param object $object
      * @return array
      */

@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Command;
 
 /*                                                                           *
@@ -13,7 +14,7 @@ use Neos\Flow\Security\AccountRepository;
 
 /**
  * Account Command controller for the MapSeven.Gpx package
- * 
+ *
  * @Flow\Scope("singleton")
  */
 class AccountCommandController extends CommandController
@@ -42,7 +43,7 @@ class AccountCommandController extends CommandController
      */
     public function createAccountCommand($user, $password, $role, $providername = 'TokenProvider')
     {
-        $account = $this->accountFactory->createAccountWithPassword($user, $password, array($role), $providername);
+        $account = $this->accountFactory->createAccountWithPassword($user, $password, [$role], $providername);
         $this->accountRepository->add($account);
     }
 }

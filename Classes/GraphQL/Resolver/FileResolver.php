@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\GraphQL\Resolver;
 
 /*                                                                           *
@@ -18,13 +19,13 @@ use MapSeven\Gpx\Service\UtilityService;
  */
 class FileResolver implements ResolverInterface
 {
-    
+
     /**
      * @Flow\Inject
      * @var UtilityService
      */
     protected $utilityService;
-    
+
     /**
      * @Flow\Inject
      * @var PersistenceManagerInterface

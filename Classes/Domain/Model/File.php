@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Domain\Model;
 
 /*                                                                           *
@@ -11,11 +12,10 @@ use Flowpack\ElasticSearch\Annotations as ElasticSearch;
 
 /**
  * File Model
- * 
+ *
  * @Flow\Entity
  * @ElasticSearch\Indexable("gpx", typeName="_doc")
  */
 class File extends Gpx
 {
-
 }

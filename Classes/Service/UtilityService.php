@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -16,46 +17,46 @@ use Neos\Media\Domain\Repository\AssetRepository;
 
 /**
  * Utiliy Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class UtilityService 
+class UtilityService
 {
-    
+
     /**
      * @var YamlSource
      * @Flow\Inject
      */
     protected $configurationSource;
-    
+
     /**
      * @Flow\Inject
      * @var ConfigurationManager
      */
     protected $configurationManager;
-    
+
     /**
      * @Flow\Inject
      * @var ResourceManager
      */
     protected $resourceManager;
-    
+
     /**
      * @Flow\Inject
      * @var AssetRepository
      */
     protected $assetRepository;
 
-    
+
     /**
      * Returns saved GPX File
-     * 
+     *
      * @param string $filename
      * @param string $content
      * @param string $source
      * @return Asset
      */
-    public function saveXMLDocument($filename, $content, $source) 
+    public function saveXMLDocument($filename, $content, $source)
     {
         $existingDocument = $this->assetRepository->findOneByTitle($filename);
         if (!empty($existingDocument)) {
@@ -92,7 +93,11 @@ class UtilityService
                 'lon' => (float)$point['@attributes']['lon'],
                 'ele' => (float)$point['ele']
             ];
-            $geojson[] = [(float)$point['@attributes']['lon'], (float)$point['@attributes']['lat'], (float)$point['ele']];
+            $geojson[] = [
+                (float)$point['@attributes']['lon'],
+                (float)$point['@attributes']['lat'],
+                (float)$point['ele']
+            ];
         }
         $coords = [
             'gpx' => $gpx,
@@ -103,20 +108,20 @@ class UtilityService
 
     /**
      * Returns sanitized filename
-     * 
+     *
      * @param string $title
      * @return string
      */
-    static public function sanitizeFilename($title) 
+    public static function sanitizeFilename($title)
     {
-        $title = str_replace(['ä','ö','ü','ß', ' '], ['ae','oe','ue','ss', '-'], strtolower($title));
+        $title = str_replace(['ä', 'ö', 'ü', 'ß', ' '], ['ae', 'oe', 'ue', 'ss', '-'], strtolower($title));
         $title = preg_replace("/[^a-z0-9\-_]/", "", $title);
-        return $title;        
+        return $title;
     }
-    
+
     /**
      * Returns result from Api Request
-     * 
+     *
      * @param array $apiSettings
      * @param array $uriSegments
      * @param array $queryParams
@@ -125,8 +130,14 @@ class UtilityService
      * @param array $body
      * @return mixed
      */
-    public function requestUri($apiSettings, $uriSegments, $queryParams = [], $includeToken = true, $method = 'GET', $body = null)
-    {
+    public function requestUri(
+        $apiSettings,
+        $uriSegments,
+        $queryParams = [],
+        $includeToken = true,
+        $method = 'GET',
+        $body = null
+    ) {
         $uri = implode('/', $uriSegments);
         if (!empty($queryParams)) {
             $uri .= '?' . http_build_query($queryParams);
@@ -149,10 +160,10 @@ class UtilityService
             }
         }
     }
-    
+
     /**
      * Returns Headers
-     * 
+     *
      * @param array $apiSettings
      * @param boolean $includeToken
      * @param string $tokenType
@@ -168,10 +179,10 @@ class UtilityService
         }
         return $headers;
     }
-    
+
     /**
      * Returns Access Token
-     * 
+     *
      * @param array $apiSettings
      * @return string
      */
@@ -192,13 +203,14 @@ class UtilityService
                 $refreshToken = $content['refresh_token'];
                 $settings = $this->configurationSource->load(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS);
                 $settings = Arrays::setValueByPath($settings, $apiSettings['auth']['refresh_token'], $refreshToken);
-                $this->configurationSource->save(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, $settings);
-                $this->configurationManager->refreshConfiguration();   
-            }               
+                $this->configurationSource->save(FLOW_PATH_CONFIGURATION . ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
+                    $settings);
+                $this->configurationManager->refreshConfiguration();
+            }
             return $accessToken;
         }
     }
-    
+
     /**
      * Signal that an activity was created
      *

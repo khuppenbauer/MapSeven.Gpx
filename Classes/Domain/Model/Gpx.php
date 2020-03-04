@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Domain\Model;
 
 /*                                                                           *
@@ -14,11 +15,11 @@ use Neos\Media\Domain\Model\Asset;
 
 /**
  * Gpx Model
- * 
+ *
  * @Flow\Entity
  * @ORM\InheritanceType("JOINED")
  */
-class Gpx 
+class Gpx
 {
 
     /**
@@ -85,28 +86,28 @@ class Gpx
      * @ElasticSearch\Mapping(type="geo_point")
      */
     protected $endCoords;
-    
+
     /**
      * @var float
      * @ORM\Column(nullable=true)
      * @ElasticSearch\Indexable
      */
     protected $distance;
-    
+
     /**
      * @var float
      * @ORM\Column(nullable=true)
      * @ElasticSearch\Indexable
      */
     protected $elapsedTime;
-    
+
     /**
      * @var float
      * @ORM\Column(nullable=true)
      * @ElasticSearch\Indexable
      */
     protected $totalElevationGain;
-    
+
     /**
      * @var float
      * @ORM\Column(nullable=true)
@@ -120,7 +121,7 @@ class Gpx
      * @ElasticSearch\Indexable
      */
     protected $elevHigh;
-    
+
     /**
      * @var float
      * @ORM\Column(nullable=true)
@@ -135,7 +136,7 @@ class Gpx
      * @ElasticSearch\Mapping(type="geo_point")
      */
     protected $minCoords;
-    
+
     /**
      * @var array
      * @ORM\Column(type="json_array")
@@ -143,7 +144,7 @@ class Gpx
      * @ElasticSearch\Mapping(type="geo_point")
      */
     protected $maxCoords;
-     
+
     /**
      * @var string
      * @ORM\Column(nullable=true)
@@ -151,7 +152,7 @@ class Gpx
      * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
      */
     protected $startCity;
-    
+
     /**
      * @var string
      * @ORM\Column(nullable=true)
@@ -191,7 +192,7 @@ class Gpx
      * @ElasticSearch\Mapping(fields={@Elasticsearch\Mapping(index_name="keyword", type="keyword", ignore_above=256)})
      */
     protected $endCountry;
-    
+
     /**
      * @var Asset
      * @ORM\OneToOne(cascade={"remove"})
@@ -229,7 +230,7 @@ class Gpx
     /**
      * @return string
      */
-    public function getName() 
+    public function getName()
     {
         return $this->name;
     }
@@ -237,7 +238,7 @@ class Gpx
     /**
      * @param string $name
      */
-    public function setName($name) 
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -277,15 +278,15 @@ class Gpx
     /**
      * @return \DateTime
      */
-    public function getDate() 
+    public function getDate()
     {
         return $this->date;
     }
-    
+
     /**
      * @param \DateTime $date
      */
-    public function setDate(\DateTime $date) 
+    public function setDate(\DateTime $date)
     {
         $this->date = $date;
     }
@@ -293,7 +294,7 @@ class Gpx
     /**
      * @return string
      */
-    public function getType() 
+    public function getType()
     {
         return $this->type;
     }
@@ -301,15 +302,15 @@ class Gpx
     /**
      * @param string $type
      */
-    public function setType($type) 
+    public function setType($type)
     {
         $this->type = $type;
     }
-    
+
     /**
      * @return boolean
      */
-    public function getActive() 
+    public function getActive()
     {
         return $this->active;
     }
@@ -317,7 +318,7 @@ class Gpx
     /**
      * @param boolean $active
      */
-    public function setActive($active) 
+    public function setActive($active)
     {
         $this->active = $active;
     }
@@ -325,15 +326,15 @@ class Gpx
     /**
      * @return string
      */
-    public function getAuthor() 
+    public function getAuthor()
     {
         return $this->author;
     }
-    
+
     /**
      * @param string $author
      */
-    public function setAuthor($author) 
+    public function setAuthor($author)
     {
         $this->author = $author;
     }
@@ -341,18 +342,18 @@ class Gpx
     /**
      * @return array
      */
-    public function getStartCoords() 
+    public function getStartCoords()
     {
         return $this->startCoords;
     }
-    
+
     /**
      * @param array $startCoords
      */
-    public function setStartCoords($startCoords) 
+    public function setStartCoords($startCoords)
     {
         $this->startCoords = [
-            'lat' => $startCoords[0], 
+            'lat' => $startCoords[0],
             'lon' => $startCoords[1]
         ];
     }
@@ -360,18 +361,18 @@ class Gpx
     /**
      * @return array
      */
-    public function getEndCoords() 
+    public function getEndCoords()
     {
         return $this->endCoords;
     }
-    
+
     /**
      * @param array $endCoords
      */
-    public function setEndCoords($endCoords) 
+    public function setEndCoords($endCoords)
     {
         $this->endCoords = [
-            'lat' => $endCoords[0], 
+            'lat' => $endCoords[0],
             'lon' => $endCoords[1]
         ];
     }
@@ -379,7 +380,7 @@ class Gpx
     /**
      * @return float
      */
-    public function getDistance() 
+    public function getDistance()
     {
         return $this->distance;
     }
@@ -387,7 +388,7 @@ class Gpx
     /**
      * @param float $distance
      */
-    public function setDistance($distance) 
+    public function setDistance($distance)
     {
         $this->distance = $distance;
     }
@@ -395,7 +396,7 @@ class Gpx
     /**
      * @return float
      */
-    public function getElapsedTime() 
+    public function getElapsedTime()
     {
         return $this->elapsedTime;
     }
@@ -403,7 +404,7 @@ class Gpx
     /**
      * @param float $elapsedTime
      */
-    public function setElapsedTime($elapsedTime) 
+    public function setElapsedTime($elapsedTime)
     {
         $this->elapsedTime = $elapsedTime;
     }
@@ -411,7 +412,7 @@ class Gpx
     /**
      * @return float
      */
-    public function getTotalElevationGain() 
+    public function getTotalElevationGain()
     {
         return $this->totalElevationGain;
     }
@@ -419,7 +420,7 @@ class Gpx
     /**
      * @param float $totalElevationGain
      */
-    public function setTotalElevationGain($totalElevationGain) 
+    public function setTotalElevationGain($totalElevationGain)
     {
         $this->totalElevationGain = $totalElevationGain;
     }
@@ -443,7 +444,7 @@ class Gpx
     /**
      * @return float
      */
-    public function getElevHigh() 
+    public function getElevHigh()
     {
         return $this->elevHigh;
     }
@@ -451,7 +452,7 @@ class Gpx
     /**
      * @param float $elevHigh
      */
-    public function setElevHigh($elevHigh) 
+    public function setElevHigh($elevHigh)
     {
         $this->elevHigh = $elevHigh;
     }
@@ -459,7 +460,7 @@ class Gpx
     /**
      * @return float
      */
-    public function getElevLow() 
+    public function getElevLow()
     {
         return $this->elevLow;
     }
@@ -467,7 +468,7 @@ class Gpx
     /**
      * @param float $elevLow
      */
-    public function setElevLow($elevLow) 
+    public function setElevLow($elevLow)
     {
         $this->elevLow = $elevLow;
     }
@@ -475,15 +476,15 @@ class Gpx
     /**
      * @return array
      */
-    public function getMinCoords() 
+    public function getMinCoords()
     {
         return $this->minCoords;
     }
-    
+
     /**
      * @param array $minCoords
      */
-    public function setMinCoords($minCoords) 
+    public function setMinCoords($minCoords)
     {
         $this->minCoords = $minCoords;
     }
@@ -491,15 +492,15 @@ class Gpx
     /**
      * @return array
      */
-    public function getMaxCoords() 
+    public function getMaxCoords()
     {
         return $this->maxCoords;
     }
-    
+
     /**
      * @param array $maxCoords
      */
-    public function setMaxCoords($maxCoords) 
+    public function setMaxCoords($maxCoords)
     {
         $this->maxCoords = $maxCoords;
     }
@@ -507,7 +508,7 @@ class Gpx
     /**
      * @return string
      */
-    public function getStartCity() 
+    public function getStartCity()
     {
         return $this->startCity;
     }
@@ -515,15 +516,15 @@ class Gpx
     /**
      * @param string $startCity
      */
-    public function setStartCity($startCity) 
+    public function setStartCity($startCity)
     {
         $this->startCity = $startCity;
     }
-    
+
     /**
      * @return string
      */
-    public function getStartState() 
+    public function getStartState()
     {
         return $this->startState;
     }
@@ -531,7 +532,7 @@ class Gpx
     /**
      * @param string $startState
      */
-    public function setStartState($startState) 
+    public function setStartState($startState)
     {
         $this->startState = $startState;
     }
@@ -539,7 +540,7 @@ class Gpx
     /**
      * @return string
      */
-    public function getStartCountry() 
+    public function getStartCountry()
     {
         return $this->startCountry;
     }
@@ -547,7 +548,7 @@ class Gpx
     /**
      * @param string $startCountry
      */
-    public function setStartCountry($startCountry) 
+    public function setStartCountry($startCountry)
     {
         $this->startCountry = $startCountry;
     }
@@ -599,7 +600,7 @@ class Gpx
     {
         $this->endCountry = $endCountry;
     }
-    
+
     /**
      * @param Asset $gpxFile
      */

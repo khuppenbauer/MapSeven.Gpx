@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\GraphQL\Resolver;
 
 /*                                                                           *
@@ -24,13 +25,13 @@ class StravaResolver implements ResolverInterface
      * @var UtilityService
      */
     protected $utilityService;
-    
+
     /**
      * @Flow\Inject
      * @var PersistenceManagerInterface
      */
     protected $persistenceManager;
-    
+
 
     public function identifier(Strava $strava)
     {

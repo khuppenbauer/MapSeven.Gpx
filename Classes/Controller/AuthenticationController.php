@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Controller;
 
 /*                                                                           *
@@ -18,8 +19,7 @@ use Neos\Flow\Security\Context as SecurityContext;
  * @Flow\Scope("singleton")
  */
 class AuthenticationController extends RestController
-{  
-
+{
     const JSON_VIEW = 'Neos\\Flow\\Mvc\\View\JsonView';
 
     /**
@@ -31,14 +31,14 @@ class AuthenticationController extends RestController
 
     /**
      * Return user if authentication is successful
-     * 
+     *
      * @SkipCsrfProtection
      * @return void
      */
     public function authAction()
     {
         $this->view->assign('value', ['user' => $this->securityContext->getAccount()->getAccountIdentifier()]);
-    }   
+    }
 
     /**
      * OAuth2 Callback Method
@@ -50,7 +50,7 @@ class AuthenticationController extends RestController
     {
         $this->view->assign('value', ['200' => 'success']);
     }
-    
+
     /**
      * Overrides the standard resolveView method
      *

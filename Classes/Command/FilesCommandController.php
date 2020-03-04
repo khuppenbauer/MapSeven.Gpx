@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Command;
 
 /*                                                                           *
@@ -16,7 +17,7 @@ use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * File Command controller for the MapSeven.Gpx package
- * 
+ *
  * @Flow\Scope("singleton")
  */
 class FilesCommandController extends CommandController
@@ -49,11 +50,11 @@ class FilesCommandController extends CommandController
 
     /**
      * Import GPX Files from directory
-     * 
+     *
      * @param string $author
      * @param string $type
      */
-    public function importCommand($author = 'John Doe', $type = 'Ride') 
+    public function importCommand($author = 'John Doe', $type = 'Ride')
     {
         libxml_use_internal_errors(true);
         $path = FLOW_PATH_DATA . 'Import';
@@ -61,12 +62,12 @@ class FilesCommandController extends CommandController
         foreach ($files as $item) {
             $xml = file_get_contents($item);
             $file = $this->fileService->import($item, $xml, $author, $type);
-            if (!empty($file)) {  
+            if (!empty($file)) {
                 $this->outputLine('Add ' . $file->getName());
                 $this->utilityService->emitActivityCreated($file);
             }
             sleep(1);
-        }        
+        }
     }
 
     /**

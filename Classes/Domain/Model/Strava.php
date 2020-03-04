@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Domain\Model;
 
 /*                                                                           *
@@ -12,7 +13,7 @@ use Flowpack\ElasticSearch\Annotations as ElasticSearch;
 
 /**
  * Strava Model
- * 
+ *
  * @Flow\Entity
  * @ElasticSearch\Indexable("gpx", typeName="_doc")
  */
@@ -24,37 +25,37 @@ class Strava extends Gpx
      * @ORM\Column(type="bigint")
      */
     protected $id;
-    
+
     /**
      * @var float
      * @ElasticSearch\Indexable
      */
     protected $movingTime;
-   
+
     /**
      * @var float
      * @ElasticSearch\Indexable
      */
     protected $averageSpeed;
-    
+
     /**
      * @var float
      * @ElasticSearch\Indexable
      */
     protected $maxSpeed;
-    
+
     /**
      * @var string
      * @ORM\Column(type="text", nullable=true)
      */
     protected $polyline;
-    
+
     /**
      * @var string
      * @ORM\Column(type="text", nullable=true)
      */
     protected $summaryPolyline;
-    
+
     /**
      * @var array
      * @ORM\Column(type="json_array")
@@ -62,18 +63,18 @@ class Strava extends Gpx
      * @ElasticSearch\Transform(type="\MapSeven\Gpx\Indexer\Transform\SegmentTransformer")
      */
     protected $segmentEfforts;
-    
+
     /**
      * @var array
      * @ORM\Column(type="json_array")
      */
     protected $photos;
 
-    
+
     /**
      * @return integer
      */
-    public function getId() 
+    public function getId()
     {
         return $this->id;
     }
@@ -81,15 +82,15 @@ class Strava extends Gpx
     /**
      * @param integer $id
      */
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
-    
+
     /**
      * @return float
      */
-    public function getMovingTime() 
+    public function getMovingTime()
     {
         return $this->movingTime;
     }
@@ -97,7 +98,7 @@ class Strava extends Gpx
     /**
      * @param float $movingTime
      */
-    public function setMovingTime($movingTime) 
+    public function setMovingTime($movingTime)
     {
         $this->movingTime = $movingTime;
     }
@@ -105,7 +106,7 @@ class Strava extends Gpx
     /**
      * @return float
      */
-    public function getAverageSpeed() 
+    public function getAverageSpeed()
     {
         return $this->averageSpeed;
     }
@@ -113,7 +114,7 @@ class Strava extends Gpx
     /**
      * @param float $averageSpeed
      */
-    public function setAverageSpeed($averageSpeed) 
+    public function setAverageSpeed($averageSpeed)
     {
         $this->averageSpeed = $averageSpeed;
     }
@@ -121,7 +122,7 @@ class Strava extends Gpx
     /**
      * @return float
      */
-    public function getMaxSpeed() 
+    public function getMaxSpeed()
     {
         return $this->maxSpeed;
     }
@@ -129,7 +130,7 @@ class Strava extends Gpx
     /**
      * @param float $maxSpeed
      */
-    public function setMaxSpeed($maxSpeed) 
+    public function setMaxSpeed($maxSpeed)
     {
         $this->maxSpeed = $maxSpeed;
     }
@@ -137,7 +138,7 @@ class Strava extends Gpx
     /**
      * @return string
      */
-    public function getPolyline() 
+    public function getPolyline()
     {
         return $this->polyline;
     }
@@ -145,7 +146,7 @@ class Strava extends Gpx
     /**
      * @param string $polyline
      */
-    public function setPolyline($polyline) 
+    public function setPolyline($polyline)
     {
         $this->polyline = $polyline;
     }
@@ -153,7 +154,7 @@ class Strava extends Gpx
     /**
      * @return string
      */
-    public function getSummaryPolyline() 
+    public function getSummaryPolyline()
     {
         return $this->summaryPolyline;
     }
@@ -161,7 +162,7 @@ class Strava extends Gpx
     /**
      * @param string $summaryPolyline
      */
-    public function setSummaryPolyline($summaryPolyline) 
+    public function setSummaryPolyline($summaryPolyline)
     {
         $this->summaryPolyline = $summaryPolyline;
     }
@@ -169,7 +170,7 @@ class Strava extends Gpx
     /**
      * @return array
      */
-    public function getSegmentEfforts() 
+    public function getSegmentEfforts()
     {
         return $this->segmentEfforts;
     }
@@ -177,7 +178,7 @@ class Strava extends Gpx
     /**
      * @param array $segmentEfforts
      */
-    public function setSegmentEfforts($segmentEfforts) 
+    public function setSegmentEfforts($segmentEfforts)
     {
         $this->segmentEfforts = $segmentEfforts;
     }
@@ -185,7 +186,7 @@ class Strava extends Gpx
     /**
      * @return array
      */
-    public function getPhotos() 
+    public function getPhotos()
     {
         return $this->photos;
     }
@@ -193,7 +194,7 @@ class Strava extends Gpx
     /**
      * @param array $photos
      */
-    public function setPhotos($photos) 
+    public function setPhotos($photos)
     {
         $this->photos = $photos;
     }

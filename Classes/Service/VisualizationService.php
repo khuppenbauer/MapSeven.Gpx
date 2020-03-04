@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -16,10 +17,10 @@ use MapSeven\Gpx\Domain\Repository\FileRepository;
 
 /**
  * Visualization Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class VisualizationService 
+class VisualizationService
 {
 
     /**
@@ -67,7 +68,7 @@ class VisualizationService
 
     /**
      * Create Visualization
-     * 
+     *
      * @param object $object
      */
     public function createVisualization($object)
@@ -90,25 +91,27 @@ class VisualizationService
             'title' => $object->getName(),
             'activityType' => 'Mountain Bike'
         ];
-        $activityResponse = $client->request('POST', $this->apiSettings['base_uri'] . 'activity', array_merge($headers, ['json' => $activityOptions], $requestOptions));
+        $activityResponse = $client->request('POST', $this->apiSettings['base_uri'] . 'activity',
+            array_merge($headers, ['json' => $activityOptions], $requestOptions));
         if ($activityResponse->getStatusCode() === 200) {
-            $uploadUrl = json_decode($activityResponse->getBody()->getContents(), true)['uploadUrl'];               
+            $uploadUrl = json_decode($activityResponse->getBody()->getContents(), true)['uploadUrl'];
             $url = $this->resourceManager->getPublicPersistentResourceUri($object->getGpxFile()->getResource());
             $xml = file_get_contents($url);
-            $client->request('PUT', $uploadUrl, array_merge(['body' => $xml], $requestOptions));            
+            $client->request('PUT', $uploadUrl, array_merge(['body' => $xml], $requestOptions));
         }
 
         $sceneOptions = [
             'title' => $object->getName(),
             'activities' => [
                 0 => [
-                    'activityId' => $identifier                        
+                    'activityId' => $identifier
                 ]
             ],
             'defaultSpeed' => 100,
             'autoplay' => false
         ];
-        $sceneResponse = $client->request('POST', $this->apiSettings['base_uri'] . 'scene', array_merge($headers, ['json' => $sceneOptions], $requestOptions));
+        $sceneResponse = $client->request('POST', $this->apiSettings['base_uri'] . 'scene',
+            array_merge($headers, ['json' => $sceneOptions], $requestOptions));
         if ($sceneResponse->getStatusCode() === 200) {
             $visualizationUrl = json_decode($sceneResponse->getBody()->getContents(), true)['sceneUrl'];
             $object->setVisualizationUrl($visualizationUrl);
@@ -117,7 +120,7 @@ class VisualizationService
             } elseif ($object instanceof File) {
                 $this->fileRepository->update($object);
             }
-            $this->persistenceManager->persistAll();            
+            $this->persistenceManager->persistAll();
         }
     }
 }

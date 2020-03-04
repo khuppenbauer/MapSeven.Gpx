@@ -64,7 +64,7 @@ MapSeven:
           - arrayAccess: startLocation.address.state
             objectAccess: startState
           - arrayAccess: startLocation.address.country
-            objectAccess: startCountry            
+            objectAccess: startCountry
           - arrayAccess: start_latlng
             objectAccess: startCoords
           - arrayAccess: map.summary_polyline

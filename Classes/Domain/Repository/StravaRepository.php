@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Domain\Repository;
 
 /*                                                                           *
@@ -10,10 +11,9 @@ use Neos\Flow\Annotations as Flow;
 
 /**
  * Strava Repository
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class StravaRepository extends GpxRepository 
+class StravaRepository extends GpxRepository
 {
-    
 }

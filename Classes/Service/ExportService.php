@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -16,10 +17,10 @@ use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * Export Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class ExportService 
+class ExportService
 {
 
     /**
@@ -33,7 +34,7 @@ class ExportService
      * @var array
      */
     protected $domain;
-    
+
     /**
      * @Flow\Inject
      * @var ResourceManager
@@ -49,7 +50,7 @@ class ExportService
 
     /**
      * Creates file with Activity Data
-     * 
+     *
      * @param object $object
      * @return string
      */
@@ -58,20 +59,20 @@ class ExportService
         $filename = $this->writeFile($this->transformObject($object), $object->getDate());
         return $filename;
     }
-    
+
     /**
      * Deletes file
-     * 
+     *
      * @param object $object
      */
     public function deleteFile($object)
     {
         $this->removeFile($object, $object->getDate());
     }
-    
+
     /**
      * Returns transformed object
-     * 
+     *
      * @param object $object
      * @return array
      */
@@ -97,7 +98,7 @@ class ExportService
                     ];
                     $array[$propertyName] = json_encode($geojson);
                 } else {
-                    $array[$propertyName] = $propertyValue;                    
+                    $array[$propertyName] = $propertyValue;
                 }
             } elseif ($propertyValue instanceof \DateTime) {
                 $array[$propertyName] = $propertyValue->format('Y-m-d');
@@ -108,10 +109,10 @@ class ExportService
         }
         return $array;
     }
-    
+
     /**
      * Write File
-     * 
+     *
      * @param array $data
      * @param \DateTime $date
      * @return string
@@ -129,17 +130,17 @@ class ExportService
         if (!is_dir($path)) {
             Files::createDirectoryRecursively($path);
         }
-        $fileName =  $path . '/' . $data['slug'] . '.' . $this->settings['create']['extension'];
+        $fileName = $path . '/' . $data['slug'] . '.' . $this->settings['create']['extension'];
         file_put_contents($fileName, $content);
         if ($this->settings['commit']['enabled'] === true) {
-            $this->commit('Create Activitiy "' . $data['slug'] . '"');            
+            $this->commit('Create Activitiy "' . $data['slug'] . '"');
         }
         return $fileName;
     }
-    
+
     /**
      * Remove File
-     * 
+     *
      * @param object $data
      * @param \DateTime $date
      */
@@ -152,13 +153,13 @@ class ExportService
         $fileName = $this->settings['create']['path'] . '/' . $slug . '.' . $this->settings['create']['extension'];
         unlink($fileName);
         if ($this->settings['commit']['enabled'] === true) {
-            $this->commit('Delete Activity "' . $slug . '"');            
+            $this->commit('Delete Activity "' . $slug . '"');
         }
     }
-    
+
     /**
      * Commit File
-     * 
+     *
      * @param string $message
      */
     protected function commit($message)

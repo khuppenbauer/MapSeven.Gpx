@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Command;
 
 /*                                                                           *
@@ -16,7 +17,7 @@ use MapSeven\Gpx\Service\ExportService;
 
 /**
  * Strava Command controller for the MapSeven.Gpx package
- * 
+ *
  * @Flow\Scope("singleton")
  */
 class StravaCommandController extends CommandController
@@ -27,13 +28,13 @@ class StravaCommandController extends CommandController
      * @var array
      */
     protected $apiSettings;
-    
+
     /**
      * @Flow\Inject
      * @var StravaRepository
      */
     protected $stravaRepository;
-    
+
     /**
      * @Flow\Inject
      * @var UtilityService
@@ -61,29 +62,29 @@ class StravaCommandController extends CommandController
 
     /**
      * Import Strava Activities
-     * 
+     *
      * @param integer $page
      * @param integer $perPage
      */
-    public function importCommand($page = 1, $perPage = 30) 
+    public function importCommand($page = 1, $perPage = 30)
     {
         $athlete = $this->utilityService->requestUri($this->apiSettings, ['athlete']);
         $this->addAthleteActivities($page, $perPage, $athlete['username']);
     }
-    
+
     /**
      * Update Strava Activities
-     * 
+     *
      * @param boolean $requestData
      */
-    public function updateCommand($requestData = false) 
+    public function updateCommand($requestData = false)
     {
         $athlete = $this->utilityService->requestUri($this->apiSettings, ['athlete']);
         $stravaActivities = $this->stravaRepository->findAll();
         foreach ($stravaActivities as $stravaActivity) {
             if ($requestData === true) {
                 $this->stravaService->addActivity($stravaActivity->getId(), $athlete['username']);
-                sleep(1);                
+                sleep(1);
             } else {
                 $stravaActivity->setUpdated(new \DateTime());
                 $this->stravaRepository->update($stravaActivity);
@@ -106,8 +107,8 @@ class StravaCommandController extends CommandController
     }
 
     /**
-     * Add Strava Activities 
-     * 
+     * Add Strava Activities
+     *
      * @param integer $page
      * @param integer $perPage
      * @param string $athlete

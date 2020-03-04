@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Indexer\Transform;
 
 /*                                                                           *
@@ -13,7 +14,7 @@ use Flowpack\ElasticSearch\Annotations\Transform;
 
 /**
  * Segment Transformer
- * 
+ *
  * @Flow\Scope("singleton")
  */
 class SegmentTransformer implements TransformerInterface

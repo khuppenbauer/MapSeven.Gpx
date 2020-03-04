@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Domain\Repository;
 
 /*                                                                           *
@@ -13,7 +14,7 @@ use Neos\Flow\Persistence\QueryResultInterface;
 
 /**
  * Gpx Repository
- * 
+ *
  * @Flow\Scope("singleton")
  */
 class GpxRepository extends Repository
@@ -22,7 +23,7 @@ class GpxRepository extends Repository
     /**
      * @var array
      */
-    protected $defaultOrderings = array('date' => QueryInterface::ORDER_DESCENDING);
+    protected $defaultOrderings = ['date' => QueryInterface::ORDER_DESCENDING];
 
 
     /**

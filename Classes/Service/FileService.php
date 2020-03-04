@@ -1,4 +1,5 @@
 <?php
+
 namespace MapSeven\Gpx\Service;
 
 /*                                                                           *
@@ -17,10 +18,10 @@ use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * File Service
- * 
+ *
  * @Flow\Scope("singleton")
  */
-class FileService 
+class FileService
 {
 
     /**
@@ -34,7 +35,7 @@ class FileService
      * @var array
      */
     protected $timezoneSettings;
-       
+
     /**
      * @Flow\Inject
      * @var AssetRepository
@@ -46,13 +47,13 @@ class FileService
      * @var FileRepository
      */
     protected $fileRepository;
-    
+
     /**
      * @Flow\Inject
      * @var UtilityService
      */
     protected $utilityService;
-    
+
     /**
      * @Flow\Inject
      * @var PersistenceManagerInterface
@@ -74,16 +75,16 @@ class FileService
         $content = simplexml_load_string($xml);
         if (!$content instanceof \SimpleXMLElement) {
             //try to fix corrupted files
-            $xml = substr($xml, 0, strrpos($xml, '</trkpt>')). '</trkpt></trkseg></trk></gpx>';
+            $xml = substr($xml, 0, strrpos($xml, '</trkpt>')) . '</trkpt></trkseg></trk></gpx>';
             $content = simplexml_load_string($xml);
             if (!$content instanceof \SimpleXMLElement) {
-                return;   
+                return;
             }
         }
         $array = json_decode(json_encode($content), true);
         $name = Arrays::getValueByPath($array, 'trk.name');
         if (empty($name)) {
-            $name = Arrays::getValueByPath($array, 'trk.0.name');                
+            $name = Arrays::getValueByPath($array, 'trk.0.name');
         }
         if (empty($name)) {
             $pathinfo = pathinfo($file);
@@ -96,13 +97,14 @@ class FileService
         } else {
             $date = new \DateTime($date);
         }
-        $filename = $date->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($file), 0, 6);
+        $filename = $date->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($name) . '-' . substr(md5($file), 0,
+                6);
         $existingDocument = $this->assetRepository->findOneByTitle($filename);
         if (!empty($existingDocument)) {
             return $this->fileRepository->findOneByGpxFile($existingDocument);
-        } 
+        }
         $gpxFile = $this->utilityService->saveXMLDocument($filename, $xml, 'file');
-        $owner = Arrays::getValueByPath($array, 'metadata.author.name'); 
+        $owner = Arrays::getValueByPath($array, 'metadata.author.name');
         $author = !empty($owner) ? $owner : $author;
         $fileObject = $this->convertObject($name, $date, $array, $author, $type);
         $fileObject->setGpxFile($gpxFile);
@@ -115,7 +117,7 @@ class FileService
 
     /**
      * Returns file object
-     * 
+     *
      * @param string $name
      * @param \DateTime $date
      * @param array $array
@@ -123,11 +125,11 @@ class FileService
      * @param string $type
      * @return File
      */
-    protected function convertObject($name, $date, $array, $author, $type) 
+    protected function convertObject($name, $date, $array, $author, $type)
     {
         $points = Arrays::getValueByPath($array, 'trk.trkseg.trkpt');
         if (empty($points)) {
-            $points = Arrays::getValueByPath($array, 'trk.0.trkseg.trkpt');                
+            $points = Arrays::getValueByPath($array, 'trk.0.trkseg.trkpt');
         }
         if (empty($points)) {
             $points = Arrays::getValueByPath($array, 'trk.trkseg.0.trkpt');
@@ -135,10 +137,30 @@ class FileService
         array_shift($points);
         if (!empty($points)) {
             $startPoint = $points[0];
-            $endPoint = $points[count($points)-1];
-            $startLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $startPoint['@attributes']['lat'], 'lon' => $startPoint['@attributes']['lon'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
-            $endLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], ['key' => $this->geocodingSettings['key'], 'format' => 'json', 'lat' => $endPoint['@attributes']['lat'], 'lon' => $endPoint['@attributes']['lon'], 'normalizecity' => 1, 'accept-language' => 'de'], false);
-            $timezone = $this->utilityService->requestUri($this->timezoneSettings, ['get-time-zone'], ['key' => $this->timezoneSettings['key'], 'format' => 'json', 'lat' => $startPoint['@attributes']['lat'], 'lng' => $startPoint['@attributes']['lon'], 'by' => 'position'], false);
+            $endPoint = $points[count($points) - 1];
+            $startLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
+                'key' => $this->geocodingSettings['key'],
+                'format' => 'json',
+                'lat' => $startPoint['@attributes']['lat'],
+                'lon' => $startPoint['@attributes']['lon'],
+                'normalizecity' => 1,
+                'accept-language' => 'de'
+            ], false);
+            $endLocation = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
+                'key' => $this->geocodingSettings['key'],
+                'format' => 'json',
+                'lat' => $endPoint['@attributes']['lat'],
+                'lon' => $endPoint['@attributes']['lon'],
+                'normalizecity' => 1,
+                'accept-language' => 'de'
+            ], false);
+            $timezone = $this->utilityService->requestUri($this->timezoneSettings, ['get-time-zone'], [
+                'key' => $this->timezoneSettings['key'],
+                'format' => 'json',
+                'lat' => $startPoint['@attributes']['lat'],
+                'lng' => $startPoint['@attributes']['lon'],
+                'by' => 'position'
+            ], false);
             $date->setTimezone(new \DateTimeZone($timezone['zoneName']));
             $file = new File();
             $file->setName($name);
@@ -146,7 +168,10 @@ class FileService
             $file->setAuthor($author);
             $file->setType($type);
             $data = static::calculateFromPoints($points);
-            $file->setStartCoords([round($startPoint['@attributes']['lat'], 2), round($startPoint['@attributes']['lon'], 2)]);
+            $file->setStartCoords([
+                round($startPoint['@attributes']['lat'], 2),
+                round($startPoint['@attributes']['lon'], 2)
+            ]);
             $file->setEndCoords([round($endPoint['@attributes']['lat'], 2), round($endPoint['@attributes']['lon'], 2)]);
             $file->setElapsedTime($data['elapsedTime']);
             $file->setMinCoords($data['minCoords']);
@@ -168,7 +193,7 @@ class FileService
 
     /**
      * Returns calculated metadata from points
-     * 
+     *
      * @param array $points
      * @return array
      */
@@ -230,33 +255,33 @@ class FileService
 
     /**
      * Returns distance between two points
-     * 
+     *
      * @param float $lat1
      * @param float $lon1
      * @param float $lat2
      * @param float $lon2
      * @return float
      */
-    protected static function getDistance($lat1, $lon1, $lat2, $lon2) 
+    protected static function getDistance($lat1, $lon1, $lat2, $lon2)
     {
         $earthRadiusM = 6371000;
 
-        $dLat = static::degreesToRadians($lat2-$lat1);
-        $dLon = static::degreesToRadians($lon2-$lon1);
+        $dLat = static::degreesToRadians($lat2 - $lat1);
+        $dLon = static::degreesToRadians($lon2 - $lon1);
 
         $lat1 = static::degreesToRadians($lat1);
         $lat2 = static::degreesToRadians($lat2);
 
-        $a = sin($dLat/2) * sin($dLat/2) + sin($dLon/2) * sin($dLon/2) * cos($lat1) * cos($lat2); 
-        $c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
+        $a = sin($dLat / 2) * sin($dLat / 2) + sin($dLon / 2) * sin($dLon / 2) * cos($lat1) * cos($lat2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
         return $earthRadiusM * $c;
     }
-    
+
     /**
      * @param float $degrees
      * @return float
      */
-    protected static function degreesToRadians($degrees) 
+    protected static function degreesToRadians($degrees)
     {
         return $degrees * M_PI / 180;
     }
