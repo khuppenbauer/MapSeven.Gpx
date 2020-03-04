@@ -1,22 +1,22 @@
 {
-  "name": "mapseven/gpx",
-  "description": "Flow Framework package to handle gpx files and strava activities",
-  "type": "neos-package",
-  "require": {
-    "neos/flow": "*",
-    "flowpack/elasticsearch": "*",
-    "guzzlehttp/guzzle": "*",
-    "neos/media": "*",
-    "t3n/graphql": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "MapSeven\\Gpx\\": "Classes/"
+    "name": "mapseven/gpx",
+    "description": "Flow Framework package to handle gpx files and strava activities",
+    "type": "neos-package",
+    "require": {
+        "neos/flow": "*",
+        "flowpack/elasticsearch": "*",
+        "guzzlehttp/guzzle": "*",
+        "neos/media": "*",
+        "t3n/graphql": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MapSeven\\Gpx\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "MapSeven.Gpx"
+        }
     }
-  },
-  "extra": {
-    "neos": {
-      "package-key": "MapSeven.Gpx"
-    }
-  }
 }

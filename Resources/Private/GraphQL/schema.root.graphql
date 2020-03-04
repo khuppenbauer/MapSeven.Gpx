@@ -24,8 +24,10 @@ type File {
   startCity: String
   startState: String
   startCountry: String
-  coords: [Coord]
-  geoJson: Geometry
+  staticImage: String
+  geoJson(time: Int, distance: Int, points: Int): Geometry
+  geoJsonCompressed: String
+  gpxFile: String
 }
 
 type Strava {
@@ -47,7 +49,6 @@ type Strava {
   startCity: String
   startState: String
   startCountry: String
-  coords: [Coord]
   id: ID
   movingTime: Float
   averageSpeed: Float
@@ -56,7 +57,10 @@ type Strava {
   summaryPolyline: String
   segmentEfforts: [SegmentEffort]
   photos: [String]
-  geoJson: Geometry
+  staticImage: String
+  geoJson(time: Int, distance: Int, points: Int): Geometry
+  geoJsonCompressed: String
+  gpxFile: String
 }
 
 type Coord {
@@ -95,7 +99,7 @@ type Achievements {
   rank: Int
   type: String
   type_id: Int
-} 
+}
 
 type Segment {
   id: ID
@@ -121,9 +125,9 @@ type Segment {
   elevation_high: Float
 }
 
-scalar Coordinates
+scalar Features
 
 type Geometry {
   type: String!
-  coordinates: Coordinates!
+  features: Features!
 }

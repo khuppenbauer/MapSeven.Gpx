@@ -9,6 +9,8 @@ namespace MapSeven\Gpx\GraphQL\Resolver;
 
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
+use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\Utility\Arrays;
 use t3n\GraphQL\ResolverInterface;
 use MapSeven\Gpx\Domain\Model\Strava;
 use MapSeven\Gpx\Service\UtilityService;
@@ -19,6 +21,17 @@ use MapSeven\Gpx\Service\UtilityService;
  */
 class StravaResolver implements ResolverInterface
 {
+    /**
+     * @Flow\InjectConfiguration("domain")
+     * @var array
+     */
+    protected $domain;
+
+    /**
+     * @Flow\Inject
+     * @var ResourceManager
+     */
+    protected $resourceManager;
 
     /**
      * @Flow\Inject
@@ -48,21 +61,23 @@ class StravaResolver implements ResolverInterface
         return $strava->getDate()->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($strava->getName());
     }
 
-    public function coords(Strava $strava)
+    public function geoJson(Strava $strava, $variables)
     {
-        $gpxFile = $strava->getGpxFile();
-        $coords = $this->utilityService->convertGpx($gpxFile);
-        return $coords['gpx'];
+        $time = Arrays::getValueByPath($variables, 'time');
+        $distance = Arrays::getValueByPath($variables, 'distance');
+        $points = Arrays::getValueByPath($variables, 'points');
+        return $strava->getGeoJson($time, $distance, $points);
     }
 
-    public function geoJson(Strava $strava)
+    public function staticImage(Strava $strava)
     {
-        $gpxFile = $strava->getGpxFile();
-        $coords = $this->utilityService->convertGpx($gpxFile);
-        $geojson = [
-            'type' => 'LineString',
-            'coordinates' => $coords['geojson']
-        ];
-        return $geojson;
+        $staticImage = $this->resourceManager->getPublicPersistentResourceUri($strava->getStaticImage()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $staticImage);
+    }
+
+    public function gpxFile(Strava $strava)
+    {
+        $gpxFileUrl = $this->resourceManager->getPublicPersistentResourceUri($strava->getGpxFile()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $gpxFileUrl);
     }
 }

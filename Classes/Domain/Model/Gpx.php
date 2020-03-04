@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Flowpack\ElasticSearch\Annotations as ElasticSearch;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Media\Domain\Model\Asset;
+use Neos\Utility\Arrays;
+use MapSeven\Gpx\Service\GeoFunctionsService;
+use MapSeven\Gpx\Service\MapboxService;
+use MapSeven\Gpx\Service\UtilityService;
 
 /**
  * Gpx Model
@@ -206,10 +210,46 @@ class Gpx
     protected $visualizationUrl;
 
     /**
+     * @var Asset
+     * @ORM\OneToOne(cascade={"remove"})
+     */
+    protected $staticImage;
+
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     */
+    protected $geoJsonCompressed;
+
+    /**
+     * @var array
+     * @Flow\Transient
+     */
+    protected $geoJson;
+
+    /**
      * @Flow\Inject
      * @var ResourceManager
      */
     protected $resourceManager;
+
+    /**
+     * @Flow\Inject
+     * @var GeoFunctionsService
+     */
+    protected $geoFunctionsService;
+
+    /**
+     * @Flow\Inject
+     * @var MapboxService
+     */
+    protected $mapboxService;
+
+    /**
+     * @Flow\Inject
+     * @var UtilityService
+     */
+    protected $utilityService;
 
 
     /**
@@ -625,5 +665,108 @@ class Gpx
     public function setVisualizationUrl($visualizationUrl)
     {
         $this->visualizationUrl = $visualizationUrl;
+    }
+
+    /**
+     * @return Asset
+     */
+    public function getStaticImage()
+    {
+        return $this->staticImage;
+    }
+
+    /**
+     * @param string $style
+     * @param string $size
+     * @param string $stroke
+     * @param string $strokeWidth
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     * @throws \Neos\Flow\ResourceManagement\Exception
+     */
+    public function generateStaticImage($style = null, $size = null, $stroke = null, $strokeWidth = null)
+    {
+        $staticImage = $this->mapboxService->createStaticImage($this->geoJson, $this->gpxFile->getTitle(), $style,
+            $size, $stroke, $strokeWidth);
+        $this->setStaticImage($staticImage);
+    }
+
+    /**
+     * @param Asset $staticImage
+     */
+    public function setStaticImage($staticImage)
+    {
+        $this->staticImage = $staticImage;
+    }
+
+    /**
+     * Returns geoJson with optional tidy params
+     *
+     * @param integer $time
+     * @param integer $distance
+     * @param integer $points
+     * @return array
+     */
+    public function getGeoJson($time = null, $distance = null, $points = null)
+    {
+        if (empty($this->geoJson) && !empty($this->gpxFile)) {
+            $this->generateGeoJson($time, $distance, $points);
+        }
+        return $this->geoJson;
+    }
+
+    /**
+     * Generate GeoJson with optional tidy params
+     *
+     * @param integer $time
+     * @param integer $distance
+     * @param integer $points
+     */
+    public function generateGeoJson($time = null, $distance = null, $points = null)
+    {
+        $geoJson = $this->geoFunctionsService->togeojson($this->gpxFile);
+        if (isset($time) && isset($distance)) {
+            $coordinates = Arrays::getValueByPath($geoJson, 'features.0.geometry.coordinates');
+            $geoJson = $this->geoFunctionsService->geoJsonTidy($geoJson, $time, $distance, count($coordinates));
+        }
+        if (isset($points)) {
+            $coordinates = Arrays::getValueByPath($geoJson, 'features.0.geometry.coordinates');
+            $simplifiedCoordinates = $this->utilityService->simplifyGeoJsonLineString($coordinates, $points);
+            $geoJson = Arrays::setValueByPath($geoJson, 'features.0.geometry.coordinates', $simplifiedCoordinates);
+        }
+        $geoJson = Arrays::unsetValueByPath($geoJson, 'features.0.properties.coordTimes');
+        $this->setGeoJson($geoJson);
+    }
+
+    /**
+     * @param array $geoJson
+     */
+    public function setGeoJson($geoJson)
+    {
+        $this->geoJson = $geoJson;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGeoJsonCompressed()
+    {
+        return $this->geoJsonCompressed;
+    }
+
+    /**
+     * Generate GeoJson Compressed
+     */
+    public function generateGeoJsonCompressed()
+    {
+        $geoJsonCompressed = $this->geoFunctionsService->geobuf($this->geoJson);
+        $this->setGeoJsonCompressed($geoJsonCompressed);
+    }
+
+    /**
+     * @param string $geoJsonCompressed
+     */
+    public function setGeoJsonCompressed($geoJsonCompressed)
+    {
+        $this->geoJsonCompressed = $geoJsonCompressed;
     }
 }

@@ -116,6 +116,9 @@ class StravaService
             ObjectAccess::setProperty($strava, $property['objectAccess'], $propertyValue);
         }
         $strava->setGpxFile($this->gpxFile);
+        $strava->generateGeoJson();
+        $strava->generateGeoJsonCompressed();
+        $strava->generateStaticImage();
         return $strava;
     }
 
@@ -262,8 +265,8 @@ class StravaService
         $trkseg = $trk->addChild('trkseg');
         foreach ($data as $item) {
             $trkpnt = $trkseg->addChild('trkpt');
-            $trkpnt->addAttribute('lat', $item['latlng'][0]);
-            $trkpnt->addAttribute('lon', $item['latlng'][1]);
+            $trkpnt->addAttribute('lat', round($item['latlng'][0], 6));
+            $trkpnt->addAttribute('lon', round($item['latlng'][1], 6));
             $trkpnt->addChild('ele', $item['altitude']);
             $trkpnt->addChild('time', $item['time']);
         }

@@ -100,6 +100,18 @@ MapSeven:
           grant_type: refresh_token
         oauth_uri: https://api.ayvri.com/2.0/auth
         base_uri: https://api.ayvri.com/2.0/
+    geoFunctions:
+      api:
+        base_uri: null
+    mapbox:
+      api:
+        base_uri: https://api.mapbox.com/styles/v1/
+        key: null
+      staticImage:
+        size: 640x480
+        style: mapbox/satellite-streets-v11
+        stroke: '#ff3300'
+        strokeWidth: 5
 
 t3n:
   GraphQL:

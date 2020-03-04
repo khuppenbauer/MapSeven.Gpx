@@ -10,6 +10,7 @@ namespace MapSeven\Gpx\Service;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Configuration\Source\YamlSource;
 use Neos\Flow\Configuration\ConfigurationManager;
+use Neos\Flow\Persistence\PersistenceManagerInterface;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Utility\Arrays;
 use Neos\Media\Domain\Model\Document;
@@ -47,6 +48,11 @@ class UtilityService
      */
     protected $assetRepository;
 
+    /**
+     * @Flow\Inject
+     * @var PersistenceManagerInterface
+     */
+    protected $persistenceManager;
 
     /**
      * Returns saved GPX File
@@ -71,6 +77,7 @@ class UtilityService
         $asset->setTitle($filename);
         $asset->setAssetSourceIdentifier($source);
         $this->assetRepository->add($asset);
+        $this->persistenceManager->persistAll();
         return $asset;
     }
 
@@ -127,7 +134,7 @@ class UtilityService
      * @param array $queryParams
      * @param boolean $includeToken
      * @param string $method
-     * @param array $body
+     * @param mixed $body
      * @return mixed
      */
     public function requestUri(
@@ -147,7 +154,11 @@ class UtilityService
             'headers' => $this->getHeaders($apiSettings, $includeToken, 'Bearer ')
         ];
         if (!empty($body)) {
-            $options['json'] = $body;
+            if (is_array($body)) {
+                $options['json'] = $body;
+            } else {
+                $options['body'] = $body;
+            }
         }
         $response = $client->request($method, $uri, $options);
         if ($response->getStatusCode() === 200) {
@@ -209,6 +220,32 @@ class UtilityService
             }
             return $accessToken;
         }
+    }
+
+    /**
+     * Returns simplified GeoJson
+     *
+     * @param array $coordinates
+     * @param type $amount
+     * @return array
+     */
+    public function simplifyGeoJsonLineString($coordinates, $amount = 100)
+    {
+        $points = [];
+        $count = count($coordinates);
+        if ($count < $amount) {
+            return $coordinates;
+        }
+        $factor = round($count / $amount);
+        foreach ($coordinates as $key => $coordinate) {
+            if ($key % $factor === 0) {
+                $points[] = [
+                    0 => round($coordinate[0], 6),
+                    1 => round($coordinate[1], 6)
+                ];
+            }
+        }
+        return $points;
     }
 
     /**

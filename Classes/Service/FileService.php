@@ -108,6 +108,9 @@ class FileService
         $author = !empty($owner) ? $owner : $author;
         $fileObject = $this->convertObject($name, $date, $array, $author, $type);
         $fileObject->setGpxFile($gpxFile);
+        $fileObject->generateGeoJson();
+        $fileObject->getGeoJsonCompressed();
+        $fileObject->generateStaticImage();
         if (!empty($fileObject)) {
             $this->fileRepository->add($fileObject);
             $this->persistenceManager->persistAll();
@@ -172,7 +175,10 @@ class FileService
                 round($startPoint['@attributes']['lat'], 2),
                 round($startPoint['@attributes']['lon'], 2)
             ]);
-            $file->setEndCoords([round($endPoint['@attributes']['lat'], 2), round($endPoint['@attributes']['lon'], 2)]);
+            $file->setEndCoords([
+                round($endPoint['@attributes']['lat'], 2),
+                round($endPoint['@attributes']['lon'], 2)
+            ]);
             $file->setElapsedTime($data['elapsedTime']);
             $file->setMinCoords($data['minCoords']);
             $file->setMaxCoords($data['maxCoords']);

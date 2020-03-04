@@ -25,6 +25,7 @@ use MapSeven\Gpx\Service\UtilityService;
  */
 class FileController extends RestController
 {
+
     const JSON_VIEW = 'Neos\\Flow\\Mvc\\View\JsonView';
 
     /**
@@ -84,17 +85,14 @@ class FileController extends RestController
      * Show GeoJson Action
      *
      * @param File $file
+     * @param integer $time
+     * @param integer $distance
+     * @param integer $points
      * @return void
      */
-    public function showGeoJsonAction(File $file)
+    public function showGeoJsonAction(File $file, $time = null, $distance = null, $points = null)
     {
-        $gpxFile = $file->getGpxFile();
-        $coords = $this->utilityService->convertGpx($gpxFile);
-        $geojson = [
-            'type' => 'LineString',
-            'coordinates' => $coords['geojson']
-        ];
-        $this->view->assign('value', $geojson);
+        $this->view->assign('value', $file->getGeoJson($time, $distance, $points));
     }
 
     /**

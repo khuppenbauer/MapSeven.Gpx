@@ -9,6 +9,8 @@ namespace MapSeven\Gpx\GraphQL\Resolver;
 
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
+use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\Utility\Arrays;
 use t3n\GraphQL\ResolverInterface;
 use MapSeven\Gpx\Domain\Model\File;
 use MapSeven\Gpx\Service\UtilityService;
@@ -20,6 +22,17 @@ use MapSeven\Gpx\Service\UtilityService;
 class FileResolver implements ResolverInterface
 {
 
+    /**
+     * @Flow\InjectConfiguration("domain")
+     * @var array
+     */
+    protected $domain;
+
+    /**
+     * @Flow\Inject
+     * @var ResourceManager
+     */
+    protected $resourceManager;
     /**
      * @Flow\Inject
      * @var UtilityService
@@ -48,21 +61,23 @@ class FileResolver implements ResolverInterface
         return $file->getDate()->format('Y-m-d') . '-' . UtilityService::sanitizeFilename($file->getName());
     }
 
-    public function coords(File $file)
+    public function geoJson(File $file, $variables)
     {
-        $gpxFile = $file->getGpxFile();
-        $coords = $this->utilityService->convertGpx($gpxFile);
-        return $coords['gpx'];
+        $time = Arrays::getValueByPath($variables, 'time');
+        $distance = Arrays::getValueByPath($variables, 'distance');
+        $points = Arrays::getValueByPath($variables, 'points');
+        return $file->getGeoJson($time, $distance, $points);
     }
 
-    public function geoJson(File $file)
+    public function staticImage(File $file)
     {
-        $gpxFile = $file->getGpxFile();
-        $coords = $this->utilityService->convertGpx($gpxFile);
-        $geojson = [
-            'type' => 'LineString',
-            'coordinates' => $coords['geojson']
-        ];
-        return $geojson;
+        $staticImage = $this->resourceManager->getPublicPersistentResourceUri($file->getStaticImage()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $staticImage);
+    }
+
+    public function gpxFile(File $file)
+    {
+        $gpxFileUrl = $this->resourceManager->getPublicPersistentResourceUri($file->getGpxFile()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $gpxFileUrl);
     }
 }
