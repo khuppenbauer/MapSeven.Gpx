@@ -90,14 +90,13 @@ class StravaController extends RestController
      * Show GeoJson Action
      *
      * @param Strava $strava
-     * @param integer $time
      * @param integer $distance
      * @param integer $points
      * @return void
      */
-    public function showGeoJsonAction(Strava $strava, $time = null, $distance = null, $points = null)
+    public function showGeoJsonAction(Strava $strava, $distance = null, $points = null)
     {
-        $this->view->assign('value', $strava->getGeoJson($time, $distance, $points));
+        $this->view->assign('value', $strava->getGeoJson($distance, $points));
     }
 
     /**

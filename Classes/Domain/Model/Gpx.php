@@ -701,39 +701,28 @@ class Gpx
     /**
      * Returns geoJson with optional tidy params
      *
-     * @param integer $time
      * @param integer $distance
      * @param integer $points
      * @return array
      */
-    public function getGeoJson($time = null, $distance = null, $points = null)
+    public function getGeoJson($distance = null, $points = null)
     {
-        if (empty($this->geoJson) && !empty($this->gpxFile)) {
-            $this->generateGeoJson($time, $distance, $points);
+        if (!empty($this->gpxFile)) {
+            $this->generateGeoJson($distance, $points);
         }
+
         return $this->geoJson;
     }
 
     /**
      * Generate GeoJson with optional tidy params
      *
-     * @param integer $time
      * @param integer $distance
      * @param integer $points
      */
-    public function generateGeoJson($time = null, $distance = null, $points = null)
+    public function generateGeoJson($distance = null, $points = null)
     {
-        $geoJson = $this->geoFunctionsService->togeojson($this->gpxFile);
-        if (isset($time) && isset($distance)) {
-            $coordinates = Arrays::getValueByPath($geoJson, 'features.0.geometry.coordinates');
-            $geoJson = $this->geoFunctionsService->geoJsonTidy($geoJson, $time, $distance, count($coordinates));
-        }
-        if (isset($points)) {
-            $coordinates = Arrays::getValueByPath($geoJson, 'features.0.geometry.coordinates');
-            $simplifiedCoordinates = $this->utilityService->simplifyGeoJsonLineString($coordinates, $points);
-            $geoJson = Arrays::setValueByPath($geoJson, 'features.0.geometry.coordinates', $simplifiedCoordinates);
-        }
-        $geoJson = Arrays::unsetValueByPath($geoJson, 'features.0.properties.coordTimes');
+        $geoJson = $this->geoFunctionsService->gpsbabel($this->gpxFile, $distance, $points);
         $this->setGeoJson($geoJson);
     }
 

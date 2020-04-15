@@ -63,10 +63,9 @@ class StravaResolver implements ResolverInterface
 
     public function geoJson(Strava $strava, $variables)
     {
-        $time = Arrays::getValueByPath($variables, 'time');
         $distance = Arrays::getValueByPath($variables, 'distance');
         $points = Arrays::getValueByPath($variables, 'points');
-        return $strava->getGeoJson($time, $distance, $points);
+        return $strava->getGeoJson($distance, $points);
     }
 
     public function staticImage(Strava $strava)

@@ -63,10 +63,9 @@ class FileResolver implements ResolverInterface
 
     public function geoJson(File $file, $variables)
     {
-        $time = Arrays::getValueByPath($variables, 'time');
         $distance = Arrays::getValueByPath($variables, 'distance');
         $points = Arrays::getValueByPath($variables, 'points');
-        return $file->getGeoJson($time, $distance, $points);
+        return $file->getGeoJson($distance, $points);
     }
 
     public function staticImage(File $file)

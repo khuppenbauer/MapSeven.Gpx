@@ -25,7 +25,7 @@ type File {
   startState: String
   startCountry: String
   staticImage: String
-  geoJson(time: Int, distance: Int, points: Int): Geometry
+  geoJson(distance: Int, points: Int): Geometry
   geoJsonCompressed: String
   gpxFile: String
 }
@@ -58,7 +58,7 @@ type Strava {
   segmentEfforts: [SegmentEffort]
   photos: [String]
   staticImage: String
-  geoJson(time: Int, distance: Int, points: Int): Geometry
+  geoJson(distance: Int, points: Int): Geometry
   geoJsonCompressed: String
   gpxFile: String
 }

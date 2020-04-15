@@ -164,7 +164,7 @@ class UtilityService
         if ($response->getStatusCode() === 200) {
             $contents = $response->getBody()->getContents();
             $contentType = explode(';', $response->getHeader('Content-Type')[0]);
-            if (in_array('application/json', $contentType)) {
+            if (in_array('application/json', $contentType) || in_array('application/geo+json', $contentType)) {
                 return json_decode($contents, true);
             } else {
                 return $contents;

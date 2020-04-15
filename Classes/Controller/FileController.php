@@ -85,14 +85,13 @@ class FileController extends RestController
      * Show GeoJson Action
      *
      * @param File $file
-     * @param integer $time
      * @param integer $distance
      * @param integer $points
      * @return void
      */
-    public function showGeoJsonAction(File $file, $time = null, $distance = null, $points = null)
+    public function showGeoJsonAction(File $file, $distance = null, $points = null)
     {
-        $this->view->assign('value', $file->getGeoJson($time, $distance, $points));
+        $this->view->assign('value', $file->getGeoJson($distance, $points));
     }
 
     /**
