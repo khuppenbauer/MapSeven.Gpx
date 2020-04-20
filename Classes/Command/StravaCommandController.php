@@ -129,9 +129,8 @@ class StravaCommandController extends CommandController
             foreach ($activities as $activity) {
                 $strava = $this->stravaService->addActivity($activity['id'], $athlete);
                 if (!empty($strava)) {
-                    $this->persistenceManager->persistAll();
                     $this->outputLine('Add ' . $activity['name']);
-                    $this->utilityService->emitActivityCreated($strava);
+                    $this->utilityService->emitActivityUpdated($strava);
                     sleep(1);
                 }
             }

@@ -120,7 +120,6 @@ class VisualizationService
             } elseif ($object instanceof File) {
                 $this->fileRepository->update($object);
             }
-            $this->persistenceManager->persistAll();
         }
     }
 }

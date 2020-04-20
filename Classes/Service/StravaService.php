@@ -116,9 +116,6 @@ class StravaService
             ObjectAccess::setProperty($strava, $property['objectAccess'], $propertyValue);
         }
         $strava->setGpxFile($this->gpxFile);
-        $strava->generateGeoJson();
-        $strava->generateGeoJsonCompressed();
-        $strava->generateStaticImage();
         return $strava;
     }
 

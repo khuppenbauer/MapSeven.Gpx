@@ -13,8 +13,6 @@ use Flowpack\ElasticSearch\Annotations as ElasticSearch;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Media\Domain\Model\Asset;
 use Neos\Utility\Arrays;
-use MapSeven\Gpx\Service\GeoFunctionsService;
-use MapSeven\Gpx\Service\MapboxService;
 use MapSeven\Gpx\Service\UtilityService;
 
 /**
@@ -232,18 +230,6 @@ class Gpx
      * @var ResourceManager
      */
     protected $resourceManager;
-
-    /**
-     * @Flow\Inject
-     * @var GeoFunctionsService
-     */
-    protected $geoFunctionsService;
-
-    /**
-     * @Flow\Inject
-     * @var MapboxService
-     */
-    protected $mapboxService;
 
     /**
      * @Flow\Inject
@@ -676,21 +662,6 @@ class Gpx
     }
 
     /**
-     * @param string $style
-     * @param string $size
-     * @param string $stroke
-     * @param string $strokeWidth
-     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
-     * @throws \Neos\Flow\ResourceManagement\Exception
-     */
-    public function generateStaticImage($style = null, $size = null, $stroke = null, $strokeWidth = null)
-    {
-        $staticImage = $this->mapboxService->createStaticImage($this->geoJson, $this->gpxFile->getTitle(), $style,
-            $size, $stroke, $strokeWidth);
-        $this->setStaticImage($staticImage);
-    }
-
-    /**
      * @param Asset $staticImage
      */
     public function setStaticImage($staticImage)
@@ -699,31 +670,11 @@ class Gpx
     }
 
     /**
-     * Returns geoJson with optional tidy params
-     *
-     * @param integer $distance
-     * @param integer $points
      * @return array
      */
-    public function getGeoJson($distance = null, $points = null)
+    public function getGeoJson()
     {
-        if (!empty($this->gpxFile)) {
-            $this->generateGeoJson($distance, $points);
-        }
-
         return $this->geoJson;
-    }
-
-    /**
-     * Generate GeoJson with optional tidy params
-     *
-     * @param integer $distance
-     * @param integer $points
-     */
-    public function generateGeoJson($distance = null, $points = null)
-    {
-        $geoJson = $this->geoFunctionsService->gpsbabel($this->gpxFile, $distance, $points);
-        $this->setGeoJson($geoJson);
     }
 
     /**
@@ -740,15 +691,6 @@ class Gpx
     public function getGeoJsonCompressed()
     {
         return $this->geoJsonCompressed;
-    }
-
-    /**
-     * Generate GeoJson Compressed
-     */
-    public function generateGeoJsonCompressed()
-    {
-        $geoJsonCompressed = $this->geoFunctionsService->geobuf($this->geoJson);
-        $this->setGeoJsonCompressed($geoJsonCompressed);
     }
 
     /**

@@ -64,7 +64,7 @@ class FilesCommandController extends CommandController
             $file = $this->fileService->import($item, $xml, $author, $type);
             if (!empty($file)) {
                 $this->outputLine('Add ' . $file->getName());
-                $this->utilityService->emitActivityCreated($file);
+                $this->utilityService->emitActivityUpdated($file);
             }
             sleep(1);
         }

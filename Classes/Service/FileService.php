@@ -108,12 +108,8 @@ class FileService
         $author = !empty($owner) ? $owner : $author;
         $fileObject = $this->convertObject($name, $date, $array, $author, $type);
         $fileObject->setGpxFile($gpxFile);
-        $fileObject->generateGeoJson();
-        $fileObject->getGeoJsonCompressed();
-        $fileObject->generateStaticImage();
         if (!empty($fileObject)) {
             $this->fileRepository->add($fileObject);
-            $this->persistenceManager->persistAll();
             return $fileObject;
         }
     }

@@ -119,8 +119,7 @@ class FileController extends RestController
     {
         $xml = file_get_contents($filename);
         $file = $this->fileService->import($filename, $xml);
-        $this->persistenceManager->persistAll();
-        $this->utilityService->emitActivityCreated($file);
+        $this->utilityService->emitActivityUpdated($file);
         $this->view->assign('value', $file);
     }
 
@@ -134,7 +133,6 @@ class FileController extends RestController
     public function updateAction(File $file)
     {
         $this->fileRepository->update($file);
-        $this->persistenceManager->persistAll();
         $this->utilityService->emitActivityUpdated($file);
         $this->view->assign('value', $file);
     }
