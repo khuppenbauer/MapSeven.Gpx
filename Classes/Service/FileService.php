@@ -31,12 +31,6 @@ class FileService
     protected $geocodingSettings;
 
     /**
-     * @Flow\InjectConfiguration("timezone")
-     * @var array
-     */
-    protected $timezoneSettings;
-
-    /**
      * @Flow\Inject
      * @var AssetRepository
      */
@@ -153,14 +147,12 @@ class FileService
                 'normalizecity' => 1,
                 'accept-language' => 'de'
             ], false);
-            $timezone = $this->utilityService->requestUri($this->timezoneSettings, ['get-time-zone'], [
-                'key' => $this->timezoneSettings['key'],
-                'format' => 'json',
+            $timezone = $this->utilityService->requestUri($this->geocodingSettings, ['timezone.php'], [
+                'key' => $this->geocodingSettings['key'],
                 'lat' => $startPoint['@attributes']['lat'],
-                'lng' => $startPoint['@attributes']['lon'],
-                'by' => 'position'
+                'lng' => $startPoint['@attributes']['lon']
             ], false);
-            $date->setTimezone(new \DateTimeZone($timezone['zoneName']));
+            $date->setTimezone(new \DateTimeZone($timezone['name']));
             $file = new File();
             $file->setName($name);
             $file->setDate($date);

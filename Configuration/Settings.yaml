@@ -78,9 +78,6 @@ MapSeven:
     geocoding:
       base_uri: https://eu1.locationiq.com/v1/
       key: null
-    timezone:
-      base_uri: http://api.timezonedb.com/v2.1/
-      key: null
     webhook:
       urls: []
     staticFile:
