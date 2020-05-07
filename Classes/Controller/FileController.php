@@ -118,9 +118,11 @@ class FileController extends RestController
     public function createAction($filename)
     {
         $xml = file_get_contents($filename);
-        $file = $this->fileService->import($filename, $xml);
-        $this->utilityService->emitActivityUpdated($file);
-        $this->view->assign('value', $file);
+        $files = $this->fileService->import($filename, $xml);
+        foreach ($files as $file) {
+            $this->utilityService->emitActivityUpdated($file);
+        }
+        $this->view->assign('value', $files);
     }
 
     /**

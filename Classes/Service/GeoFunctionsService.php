@@ -122,35 +122,4 @@ class GeoFunctionsService
         );
     }
 
-    /**
-     * Returns gpsbabel result
-     *
-     * @param Document $gpxFile
-     * @param integer $distance
-     * @param integer $points
-     * @return array
-     */
-    public function gpsbabel($gpxFile, $distance = null, $points = null)
-    {
-        $gpxFileUrl = $this->resourceManager->getPublicPersistentResourceUri($gpxFile->getResource());
-        $gpxFileUrl = str_replace(FLOW_PATH_WEB, $this->domain, $gpxFileUrl);
-        $params = [
-            'infile'=> $gpxFileUrl,
-            'intype' => 'gpx',
-            'outtype' => 'geojson'
-        ];
-        if (!empty($distance)) {
-            $params['distance'] = $distance . 'm';
-        }
-        if (!empty($points)) {
-            $params['count'] = $points;
-        }
-        return $this->utilityService->requestUri(
-            ['base_uri' => $this->geoFunctionsSettings['api']['base_uri']],
-            ['gpsbabel'],
-            $params,
-            false
-        );
-    }
-
 }

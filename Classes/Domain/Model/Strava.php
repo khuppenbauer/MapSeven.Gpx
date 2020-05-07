@@ -72,6 +72,27 @@ class Strava extends Gpx
 
 
     /**
+     * @param array $startCoords
+     */
+    public function setStartCoords($startCoords)
+    {
+        $this->startCoords = [
+            'lat' => $startCoords[0],
+            'lon' => $startCoords[1]
+        ];    }
+
+    /**
+     * @param array $endCoords
+     */
+    public function setEndCoords($endCoords)
+    {
+        $this->endCoords = [
+            'lat' => $endCoords[0],
+            'lon' => $endCoords[1]
+        ];
+    }
+
+    /**
      * @return integer
      */
     public function getId()

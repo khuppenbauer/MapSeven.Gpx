@@ -79,4 +79,10 @@ class StravaResolver implements ResolverInterface
         $gpxFileUrl = $this->resourceManager->getPublicPersistentResourceUri($strava->getGpxFile()->getResource());
         return str_replace(FLOW_PATH_WEB, $this->domain, $gpxFileUrl);
     }
+
+    public function geoJsonFile(Strava $strava)
+    {
+        $geoJsonFileUrl = $this->resourceManager->getPublicPersistentResourceUri($strava->getGeoJsonFile()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $geoJsonFileUrl);
+    }
 }

@@ -8,6 +8,9 @@ namespace MapSeven\Gpx\Service;
  *                                                                           */
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Media\Domain\Model\Asset;
+use Neos\Media\Domain\Model\AssetInterface;
+use Neos\Media\Domain\Model\Document;
 use Neos\Utility\Arrays;
 use Neos\Utility\ObjectAccess;
 use MapSeven\Gpx\Domain\Model\Strava;
@@ -35,12 +38,6 @@ class StravaService
     protected $mappingKeys;
 
     /**
-     * @Flow\InjectConfiguration("geocoding")
-     * @var array
-     */
-    protected $geocodingSettings;
-
-    /**
      * @Flow\Inject
      * @var StravaRepository
      */
@@ -51,11 +48,6 @@ class StravaService
      * @var UtilityService
      */
     protected $utilityService;
-
-    /**
-     * @var array
-     */
-    protected $bounds;
 
     /**
      * @var float
@@ -115,7 +107,10 @@ class StravaService
             $propertyValue = Arrays::getValueByPath($activity, $property['arrayAccess']);
             ObjectAccess::setProperty($strava, $property['objectAccess'], $propertyValue);
         }
-        $strava->setGpxFile($this->gpxFile);
+        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude,time',
+            $activity['start_date_local']);
+        $gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
+        $strava->setGpxFile($gpxFile);
         return $strava;
     }
 
@@ -141,30 +136,7 @@ class StravaService
         foreach ($photos as $key => $photo) {
             $photoItems[] = $photo['urls'][600];
         }
-        $activityData = $this->getActivityStreamData($activity['id'], 'high', 'latlng,altitude,time',
-            $activity['start_date_local']);
-        $this->bounds = $this->generateBounds($activityData);
-        $this->gpxFile = $this->writeGpx($activity['name'], $activity['start_date_local'], $activityData);
-        $activity['total_elevation_gain'] = round($this->totalElevationGain, 2);
-        $activity['total_elevation_loss'] = round($this->totalElevationLoss, 2);
         $activity['photos'] = $photoItems;
-        $activity['startLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
-            'key' => $this->geocodingSettings['key'],
-            'format' => 'json',
-            'lat' => $activity['start_latlng'][0],
-            'lon' => $activity['start_latlng'][1],
-            'normalizecity' => 1,
-            'accept-language' => 'de'
-        ], false);
-        $activity['endLocation'] = $this->utilityService->requestUri($this->geocodingSettings, ['reverse.php'], [
-            'key' => $this->geocodingSettings['key'],
-            'format' => 'json',
-            'lat' => $activity['end_latlng'][0],
-            'lon' => $activity['end_latlng'][1],
-            'normalizecity' => 1,
-            'accept-language' => 'de'
-        ], false);
-        $activity['bounds'] = $this->bounds;
         return $activity;
     }
 
@@ -203,59 +175,18 @@ class StravaService
     }
 
     /**
-     * Returns Bounds
-     *
-     * @param array $data
-     * @return array
-     */
-    private function generateBounds($data)
-    {
-        $this->totalElevationGain = 0;
-        $this->totalElevationLoss = 0;
-        foreach ($data as $item) {
-            $lat[] = round($item['latlng'][0], 2);
-            $lng[] = round($item['latlng'][1], 2);
-            if (isset($item['altitude'])) {
-                $ele2 = $item['altitude'];
-                if (!empty($ele1) && $ele2 > $ele1) {
-                    $diff = $ele2 - $ele1;
-                    $this->totalElevationGain = $this->totalElevationGain + $diff;
-                }
-                if (!empty($ele1) && $ele2 < $ele1) {
-                    $diff = $ele1 - $ele2;
-                    $this->totalElevationLoss = $this->totalElevationLoss + $diff;
-                }
-                $ele1 = $item['altitude'];
-            }
-        }
-        return [
-            'minLat' => min($lat),
-            'minLng' => min($lng),
-            'maxLat' => max($lat),
-            'maxLng' => max($lng),
-            'minLatLon' => ['lat' => min($lat), 'lon' => min($lng)],
-            'maxLatLon' => ['lat' => max($lat), 'lon' => max($lng)]
-        ];
-    }
-
-    /**
      * Write GPX Data to File System
      *
      * @param string $name
      * @param string $date
      * @param array $data
-     * @return Asset
+     * @return Document
      */
     private function writeGpx($name, $date, $data)
     {
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><gpx creator="StravaGPX Android" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"></gpx>');
         $metadata = $xml->addChild('metadata');
         $metadata->addChild('time', $date);
-        $bounds = $metadata->addChild('bounds');
-        $bounds->addAttribute('minlat', $this->bounds['minLat']);
-        $bounds->addAttribute('minlon', $this->bounds['minLng']);
-        $bounds->addAttribute('maxlat', $this->bounds['maxLat']);
-        $bounds->addAttribute('maxlon', $this->bounds['maxLng']);
         $trk = $xml->addChild('trk');
         $trk->addChild('name', htmlspecialchars($name));
         $trk->addChild('type', 1);

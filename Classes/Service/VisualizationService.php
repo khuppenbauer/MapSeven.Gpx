@@ -115,11 +115,6 @@ class VisualizationService
         if ($sceneResponse->getStatusCode() === 200) {
             $visualizationUrl = json_decode($sceneResponse->getBody()->getContents(), true)['sceneUrl'];
             $object->setVisualizationUrl($visualizationUrl);
-            if ($object instanceof Strava) {
-                $this->stravaRepository->update($object);
-            } elseif ($object instanceof File) {
-                $this->fileRepository->update($object);
-            }
         }
     }
 }

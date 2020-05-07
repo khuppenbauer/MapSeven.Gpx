@@ -61,10 +61,12 @@ class FilesCommandController extends CommandController
         $files = Files::readDirectoryRecursively($path);
         foreach ($files as $item) {
             $xml = file_get_contents($item);
-            $file = $this->fileService->import($item, $xml, $author, $type);
-            if (!empty($file)) {
-                $this->outputLine('Add ' . $file->getName());
-                $this->utilityService->emitActivityUpdated($file);
+            $files = $this->fileService->import($item, $xml, $author, $type);
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $this->outputLine('Add ' . $file->getName());
+                    $this->utilityService->emitActivityUpdated($file);
+                }
             }
             sleep(1);
         }

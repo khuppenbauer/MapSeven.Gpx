@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Flowpack\ElasticSearch\Annotations as ElasticSearch;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Media\Domain\Model\Asset;
+use Neos\Media\Domain\Model\Document;
 use Neos\Utility\Arrays;
 use MapSeven\Gpx\Service\UtilityService;
 
@@ -75,7 +76,7 @@ class Gpx
 
     /**
      * @var array
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json_array", nullable=true)
      * @ElasticSearch\Indexable
      * @ElasticSearch\Mapping(type="geo_point")
      */
@@ -83,7 +84,7 @@ class Gpx
 
     /**
      * @var array
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json_array", nullable=true)
      * @ElasticSearch\Indexable
      * @ElasticSearch\Mapping(type="geo_point")
      */
@@ -133,7 +134,7 @@ class Gpx
 
     /**
      * @var array
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json_array", nullable=true)
      * @ElasticSearch\Indexable
      * @ElasticSearch\Mapping(type="geo_point")
      */
@@ -141,7 +142,7 @@ class Gpx
 
     /**
      * @var array
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json_array", nullable=true)
      * @ElasticSearch\Indexable
      * @ElasticSearch\Mapping(type="geo_point")
      */
@@ -196,7 +197,7 @@ class Gpx
     protected $endCountry;
 
     /**
-     * @var Asset
+     * @var Document
      * @ORM\OneToOne(cascade={"remove"})
      */
     protected $gpxFile;
@@ -214,14 +215,14 @@ class Gpx
     protected $staticImage;
 
     /**
-     * @var string
-     * @ORM\Column(nullable=true)
+     * @var Document
+     * @ORM\OneToOne(cascade={"remove"})
      */
-    protected $geoJsonCompressed;
+    protected $geoJsonFile;
 
     /**
      * @var array
-     * @Flow\Transient
+     * @ORM\Column(type="json_array", nullable=true)
      */
     protected $geoJson;
 
@@ -372,10 +373,7 @@ class Gpx
      */
     public function setStartCoords($startCoords)
     {
-        $this->startCoords = [
-            'lat' => $startCoords[0],
-            'lon' => $startCoords[1]
-        ];
+        $this->startCoords = $startCoords;
     }
 
     /**
@@ -391,10 +389,7 @@ class Gpx
      */
     public function setEndCoords($endCoords)
     {
-        $this->endCoords = [
-            'lat' => $endCoords[0],
-            'lon' => $endCoords[1]
-        ];
+        $this->endCoords = $endCoords;
     }
 
     /**
@@ -622,7 +617,7 @@ class Gpx
     }
 
     /**
-     * @param Asset $gpxFile
+     * @param Document $gpxFile
      */
     public function setGpxFile($gpxFile)
     {
@@ -630,7 +625,7 @@ class Gpx
     }
 
     /**
-     * @return Asset
+     * @return Document
      */
     public function getGpxFile()
     {
@@ -686,18 +681,18 @@ class Gpx
     }
 
     /**
-     * @return string
+     * @return Document
      */
-    public function getGeoJsonCompressed()
+    public function getGeoJsonFile()
     {
-        return $this->geoJsonCompressed;
+        return $this->geoJsonFile;
     }
 
     /**
-     * @param string $geoJsonCompressed
+     * @param Document $geoJsonFile
      */
-    public function setGeoJsonCompressed($geoJsonCompressed)
+    public function setGeoJsonFile($geoJsonFile)
     {
-        $this->geoJsonCompressed = $geoJsonCompressed;
+        $this->geoJsonFile = $geoJsonFile;
     }
 }

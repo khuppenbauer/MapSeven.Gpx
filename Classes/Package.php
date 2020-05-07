@@ -31,13 +31,19 @@ class Package extends BasePackage
             'MapSeven\Gpx\Service\WebhookService', 'sendMessage');
 
         $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
-            'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
-
-        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
-            'MapSeven\Gpx\Service\GpxService', 'createGeoJsonCompressed');
+            'MapSeven\Gpx\Service\GpxService', 'createGeoJsonFile');
 
         $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
             'MapSeven\Gpx\Service\GpxService', 'createStaticImage');
+
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
+            'MapSeven\Gpx\Service\VisualizationService', 'createVisualization');
+
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
+            'MapSeven\Gpx\Service\GpxService', 'addMetaData');
+
+        $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
+            'MapSeven\Gpx\Service\GpxService', 'save');
 
         $dispatcher->connect('MapSeven\Gpx\Service\UtilityService', 'activityUpdated',
             'MapSeven\Gpx\Service\ExportService', 'createFile');

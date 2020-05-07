@@ -12,6 +12,8 @@ use Neos\Flow\Configuration\Source\YamlSource;
 use Neos\Flow\Configuration\ConfigurationManager;
 use Neos\Flow\Persistence\PersistenceManagerInterface;
 use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\Media\Domain\Model\Asset;
+use Neos\Media\Domain\Model\Image;
 use Neos\Utility\Arrays;
 use Neos\Media\Domain\Model\Document;
 use Neos\Media\Domain\Repository\AssetRepository;
@@ -60,7 +62,7 @@ class UtilityService
      * @param string $filename
      * @param string $content
      * @param string $source
-     * @return Asset
+     * @return Document
      */
     public function saveXMLDocument($filename, $content, $source)
     {
@@ -72,8 +74,29 @@ class UtilityService
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($content);
-        $resource = $this->resourceManager->importResourceFromContent($dom->saveXML(), $filename . '.gpx');
-        $asset = new Document($resource);
+        $asset = $this->importAsset($dom->saveXML(), $filename, 'gpx', $source);
+        return $asset;
+    }
+
+    /**
+     * Imports new Asset
+     *
+     * @param string $content
+     * @param string $filename
+     * @param string $extension
+     * @param string $source
+     * @return Asset
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     * @throws \Neos\Flow\ResourceManagement\Exception
+     */
+    public function importAsset($content, $filename, $extension, $source)
+    {
+        $resource = $this->resourceManager->importResourceFromContent($content, $filename . '.' . $extension);
+        if (in_array($extension, ['jpg', 'jpeg', 'gif', 'png'])) {
+            $asset = new Image($resource);
+        } else {
+            $asset = new Document($resource);
+        }
         $asset->setTitle($filename);
         $asset->setAssetSourceIdentifier($source);
         $this->assetRepository->add($asset);
@@ -220,32 +243,6 @@ class UtilityService
             }
             return $accessToken;
         }
-    }
-
-    /**
-     * Returns simplified GeoJson
-     *
-     * @param array $coordinates
-     * @param type $amount
-     * @return array
-     */
-    public function simplifyGeoJsonLineString($coordinates, $amount = 100)
-    {
-        $points = [];
-        $count = count($coordinates);
-        if ($count < $amount) {
-            return $coordinates;
-        }
-        $factor = round($count / $amount);
-        foreach ($coordinates as $key => $coordinate) {
-            if ($key % $factor === 0) {
-                $points[] = [
-                    0 => round($coordinate[0], 6),
-                    1 => round($coordinate[1], 6)
-                ];
-            }
-        }
-        return $points;
     }
 
     /**

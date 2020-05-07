@@ -79,4 +79,10 @@ class FileResolver implements ResolverInterface
         $gpxFileUrl = $this->resourceManager->getPublicPersistentResourceUri($file->getGpxFile()->getResource());
         return str_replace(FLOW_PATH_WEB, $this->domain, $gpxFileUrl);
     }
+
+    public function geoJsonFile(File $file)
+    {
+        $geoJsonFileUrl = $this->resourceManager->getPublicPersistentResourceUri($file->getGeoJsonFile()->getResource());
+        return str_replace(FLOW_PATH_WEB, $this->domain, $geoJsonFileUrl);
+    }
 }

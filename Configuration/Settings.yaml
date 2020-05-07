@@ -75,7 +75,7 @@ MapSeven:
             objectAccess: totalElevationLoss
           - arrayAccess: type
             objectAccess: type
-    geocoding:
+    locationService:
       base_uri: https://eu1.locationiq.com/v1/
       key: null
     webhook:

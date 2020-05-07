@@ -76,7 +76,6 @@ class MapboxService
         if (empty($asset)) {
             $coordinates = Arrays::getValueByPath($geoJson, 'features.0.geometry.coordinates');
             if (!empty($coordinates)) {
-                $points = $this->utilityService->simplifyGeoJsonLineString($coordinates);
                 $geoJsonLineString = [
                     'type' => 'Feature',
                     'properties' => [
@@ -85,7 +84,7 @@ class MapboxService
                     ],
                     'geometry' => [
                         'type' => 'LineString',
-                        'coordinates' => $points
+                        'coordinates' => $coordinates
                     ]
                 ];
                 $res = $this->utilityService->requestUri(
@@ -100,28 +99,10 @@ class MapboxService
                     ['access_token' => $this->mapboxSettings['api']['key']],
                     false
                 );
-                $asset = $this->importImage($res, $fileName);
+                $asset = $this->utilityService->importAsset($res, $fileName,  'png', 'mapbox');
             }
         }
         return $asset;
     }
 
-    /**
-     * Return Image Asset
-     *
-     * @param $content
-     * @param $fileName
-     * @return Image
-     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
-     * @throws \Neos\Flow\ResourceManagement\Exception
-     */
-    protected function importImage($content, $fileName)
-    {
-        $resource = $this->resourceManager->importResourceFromContent($content, $fileName . '.png');
-        $asset = new Image($resource);
-        $asset->setTitle($fileName);
-        $asset->setAssetSourceIdentifier('mapbox');
-        $this->assetRepository->add($asset);
-        return $asset;
-    }
 }
